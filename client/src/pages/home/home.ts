@@ -9,7 +9,6 @@ import * as io from 'socket.io-client';
 })
 export class HomePage implements OnInit {
 private socket: any;
-private chatinp:string;
 private url = 'http://localhost:3000';
 messages: any = [];
 message:string;
@@ -17,7 +16,7 @@ username:string;
 connection: any;
 
   constructor(public navCtrl: NavController) {}
-  
+
   ngOnInit(){
       this.connection = this.getMessages().subscribe((message:string) => {
         this.messages.push(message);
@@ -25,11 +24,12 @@ connection: any;
       })
   }
 
-  send(msg){
-    if(msg.trim() != ""){
-      this.socket.emit('message', msg);
+  send(){
+    if(this.message.trim() != ""){
+
+      this.socket.emit('message', this.message, this.username);
     }
-    this.chatinp = '';
+    this.message= '';
   }
 
   getMessages(){
@@ -44,4 +44,19 @@ connection: any;
     })
     return observable;
   }
+
+  getUserName(){
+    return sessionStorage.getItem('username')
+  }
+
+  setUserName(){
+    console.log('Username set '+this.username);
+    sessionStorage.setItem('username', this.username);
+    //this.username = '';
+  }
+
+  ngOnDestroy(){
+    this.connection.unsubscribe();
+  }
+
 }
