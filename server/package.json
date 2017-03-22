@@ -1,0 +1,15 @@
+{
+  "name": "Going Dutch",
+  "version": "1.0.0",
+  "description": "Realtime way of group calculating thier part of a bill",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Roy Adams - Eden Grafix",
+  "license": "ISC",
+
+  "dependencies": {
+    "socket.io": "^1.7.3"
+  }
+}

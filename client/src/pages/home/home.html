@@ -1,0 +1,18 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>
+      Ionic Blank
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+  <ion-item>
+    <ion-label fixed>Message</ion-label>
+    <ion-input type="text" [(ngModel)]="chatinp"></ion-input>
+  </ion-item>
+<button ion-button type="button" (click)="send(chatinp)" block margin-top>Send</button>
+<ion-list>
+  <ion-item *ngFor="let message of messages">  <strong>{{message.username}}:</strong> {{message.text}} </ion-item>
+</ion-list>
+</ion-content>
