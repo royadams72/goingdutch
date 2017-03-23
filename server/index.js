@@ -10,8 +10,8 @@ var io = require('socket.io'),
         console.log('User disconnected...');
       })
 
-      socket.on('message', (message) => {
-        io.emit('message', {type: 'new-message', text: message});
+      socket.on('message', (message, username) => {
+        io.emit('message', {type: 'new-message', text: message, username: username});
       })
     });
 
