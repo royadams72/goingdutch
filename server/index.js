@@ -4,15 +4,23 @@ var io = require('socket.io'),
     io = io.listen(server);
 
     io.on('connection', function(socket){
+      socket.join('some room');
       console.log('User connected');
 
       socket.on('disconnect', () => {
         console.log('User disconnected...');
       })
 
-      socket.on('message', (message, username) => {
-        io.emit('message', {type: 'new-message', text: message, username: username});
+
+      socket.on('invite', (currBillAmount, totalBillAmount, groupname, address) => {
+        io.emit('invit', {type: 'new-invite',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, address: address});
+        console.log("currBillAmount= "+currBillAmount)
       })
+
+      socket.on('items-updated', (currBillAmount, totalBillAmount, groupname, userAmount) => {
+        io.emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount});
+      })
+
     });
 
 
