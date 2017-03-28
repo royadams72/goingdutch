@@ -27,19 +27,11 @@ export class GroupPage implements OnInit {
 
     this.initForm();
     this.connection = this.adminService.getItems().subscribe((data) => {
-        //this.messages.push(message);
+        //Will need an if statment to match username, so will be able to extract correct data
         this.data = data
         this.currBillAmount = parseInt(this.data.currBillAmount);
         this.userAmount = parseInt(this.data.userAmount);
-      console.log(this.currBillAmount)
-    //  this.billAmount = this.data.billAmount;
-  //   console.log("billAmount in ngOnInit "+this.billAmount)
-       //console.log(this.data.billAmount, this.billAmount);
-      //  this.billAmount = this.data.billAmount
-        //  console.log(this.data.billAmount, this.billAmount);
-
-      //})
-    //this.calculateItems();
+        console.log(this.data)
   })
   }
 
@@ -59,36 +51,23 @@ export class GroupPage implements OnInit {
   }
 
   calculateItems(){
+    this.userAmount = this.userAmount || 0;
     let fArray: FormArray = <FormArray>this.groupForm.get('items');
     const len = fArray.length;
     let itemAmount: number = this.groupForm.get('items').value;
-    let total:number = 0;
-    let userAmount
-
-     this.userAmount = this.userAmount || 0;
-
-  console.log("this.userAmount in calculateItems "+this.userAmount)
-  //  this.currBillAmount + userAmount;
-    let amount = this.currBillAmount + this.userAmount;
+    //let total:number = 0;
+    //Take userAmount sent back from socket and add back to current bill amount
+    this.currBillAmount  = this.currBillAmount + this.userAmount;
     this.userAmount = 0;
-//amount - total;
-    console.log("amount in calculateItems "+amount)
     for(let i =0; i < len; i++ ){
-
       this.userAmount += +itemAmount[i];
 
+  }
 
+    this.currBillAmount  = this.currBillAmount  - this.userAmount;
+     console.log(this.currBillAmount)
+    this.adminService.upDateItems(this.currBillAmount, this.totalBillAmount, this.groupname, this.userAmount);
 
-    }
-    //this.currBillAmount = (this.currBillAmount - total);
-//  console.log("this.currBillAmount= "+this.currBillAmount, this.userAmount)
-   //console.log("billAmount in calculateItems "+this.billAmount)
-     amount = amount - this.userAmount;
-     console.log(amount)
-    this.adminService.upDateItems(amount, this.totalBillAmount,this.groupname, this.userAmount);
-    //this.billAmount = amount;
-
-  //  console.log(this.groupForm.get('items').value.length)
   }
   ngOnDestroy(){
    this.connection.unsubscribe();

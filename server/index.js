@@ -17,8 +17,8 @@ var io = require('socket.io'),
         console.log("currBillAmount= "+currBillAmount)
       })
 
-      socket.on('items-updated', (currBillAmount, totalBillAmount, groupname, userAmount) => {
-        io.emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount});
+      socket.on('items-updated', (currBillAmount, totalBillAmount, groupname, userAmount, username) => {
+        io.emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
       })
 
     });

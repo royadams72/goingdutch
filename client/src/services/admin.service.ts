@@ -26,7 +26,7 @@ export class AdminService {
 
 
 upDateItems(currBillAmount, totalBillAmount,groupname, userAmount){
-  this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount);
+  this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount, this.username);
 }
 
 public setGroup(totalBillAmount, groupname){
