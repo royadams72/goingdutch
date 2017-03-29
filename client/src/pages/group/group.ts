@@ -14,12 +14,13 @@ export class GroupPage implements OnInit {
   private total:number;
   private userAmount:number;
   private groupname: string;
+  private username:string
   data:any;
 
   constructor(private adminService: AdminService, private navParams: NavParams) {
      this.totalBillAmount = this.currBillAmount = parseInt(navParams.get('totalBillAmount'));
      this.groupname = navParams.get('groupname');
-
+     this.username = navParams.get('username');
 
    }
 
@@ -28,10 +29,15 @@ export class GroupPage implements OnInit {
     this.initForm();
     this.connection = this.adminService.getItems().subscribe((data) => {
         //Will need an if statment to match username, so will be able to extract correct data
+
         this.data = data
         this.currBillAmount = parseInt(this.data.currBillAmount);
+        if(this.data.username == this.username){
+
         this.userAmount = parseInt(this.data.userAmount);
         console.log(this.data)
+
+      }
   })
   }
 
@@ -66,7 +72,7 @@ export class GroupPage implements OnInit {
 
     this.currBillAmount  = this.currBillAmount  - this.userAmount;
      console.log(this.currBillAmount)
-    this.adminService.upDateItems(this.currBillAmount, this.totalBillAmount, this.groupname, this.userAmount);
+    this.adminService.upDateItems(this.currBillAmount, this.totalBillAmount, this.groupname, this.userAmount, this.username);
 
   }
   ngOnDestroy(){

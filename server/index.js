@@ -3,8 +3,8 @@ var io = require('socket.io'),
     server = http.createServer(),
     io = io.listen(server);
 
-    io.on('connection', function(socket){
-      socket.join('some room');
+    io.sockets.on('connection', function(socket){
+      //socket.join('groupname');
       console.log('User connected');
 
       socket.on('disconnect', () => {
@@ -13,12 +13,13 @@ var io = require('socket.io'),
 
 
       socket.on('invite', (currBillAmount, totalBillAmount, groupname, address) => {
-        io.emit('invit', {type: 'new-invite',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, address: address});
-        console.log("currBillAmount= "+currBillAmount)
+      socket.join(groupname);
+      io.sockets.in(groupname).emit('invit', {type: 'new-invite',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, address: address});
+        console.log("groupname= "+groupname)
       })
 
       socket.on('items-updated', (currBillAmount, totalBillAmount, groupname, userAmount, username) => {
-        io.emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
+      io.sockets.in(groupname).emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
       })
 
     });

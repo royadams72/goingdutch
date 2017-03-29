@@ -25,7 +25,7 @@ export class AdminService {
 
 
 
-upDateItems(currBillAmount, totalBillAmount,groupname, userAmount){
+upDateItems(currBillAmount, totalBillAmount,groupname, userAmount, username){
   this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount, this.username);
 }
 
@@ -84,6 +84,8 @@ Geolocation.getCurrentPosition()
 console.log('Error getting location', error);
 });
 }
+  joinGroup(){
 
+  }
 
 }
