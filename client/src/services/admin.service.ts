@@ -23,10 +23,8 @@ export class AdminService {
     this.socket = io(this.url);
    }
 
-
-
 upDateItems(currBillAmount, totalBillAmount,groupname, userAmount, username){
-  this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount, this.username);
+  this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount, username);
 }
 
 public setGroup(totalBillAmount, groupname){
@@ -47,13 +45,15 @@ const loc = {type: 'Point', coordinates: [this.location.lng, this.location.lat]}
 
 private sendInvite(address){
     this.socket.emit('invite',this.totalBillAmount, this.totalBillAmount, this.groupname, address);
-    console.log(this.totalBillAmount)
+    this.joinGroup(this.groupname);
+    //console.log(this.totalBillAmount)
 }
 
 getItems(){
   let observable = new Observable((observer:any) => {
 
     this.socket.on('upDateItems', (data:any) => {
+      
       observer.next(data);
     })
       return () => {
@@ -84,8 +84,8 @@ Geolocation.getCurrentPosition()
 console.log('Error getting location', error);
 });
 }
-  joinGroup(){
-
-  }
+joinGroup(groupname){
+this.socket.emit('group', groupname);
+}
 
 }

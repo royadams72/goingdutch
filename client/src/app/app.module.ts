@@ -3,6 +3,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
 
 import { AdminPage } from '../pages/admin/admin';
+import { UserPage } from '../pages/user/user';
 import { StartPage } from '../pages/start/start';
 import { GroupPage } from '../pages/group/group';
 
@@ -19,7 +20,8 @@ import { AgmCoreModule } from 'angular2-google-maps/core';
     MyApp,
     StartPage,
     AdminPage,
-    GroupPage
+    GroupPage,
+    UserPage
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -32,7 +34,8 @@ import { AgmCoreModule } from 'angular2-google-maps/core';
     MyApp,
     StartPage,
     AdminPage,
-    GroupPage
+    GroupPage,
+    UserPage
   ],
   providers: [
     StatusBar,

@@ -10,17 +10,7 @@
   <h2>User Page</h2>
 
   <ion-list>
-    <ion-item>
-    <ion-label floating>Amount of Receipt/Bill (Optional)</ion-label>
-    <ion-input type="number" [(ngModel)]="totalBillAmount"></ion-input>
-      </ion-item>
-
-  <ion-item>
-
-    <ion-label floating>Group Name</ion-label>
-    <ion-input type="text" [(ngModel)]="groupname"></ion-input>
-  </ion-item>
-  <button ion-button type="button" (click)="setGroup()" block margin-top>Start Group</button>
+  <button *ngFor="let group of groups" ion-button type="button" (click)="joinGroup()" block margin-top>{{ group.groupname }}</button>
 </ion-list>
 
 

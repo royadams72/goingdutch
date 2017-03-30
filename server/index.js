@@ -13,12 +13,20 @@ var io = require('socket.io'),
 
 
       socket.on('invite', (currBillAmount, totalBillAmount, groupname, address) => {
-      socket.join(groupname);
-      io.sockets.in(groupname).emit('invit', {type: 'new-invite',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, address: address});
-        console.log("groupname= "+groupname)
+      io.emit('invit', {type: 'new-invite',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, address: address});
+
       })
 
+      socket.on('group', function(groupname) {
+             socket.join(groupname);
+            // var clients = io.sockets.clients(groupname); // all users from room `room`
+            //  console.log(clients);
+         });
+
       socket.on('items-updated', (currBillAmount, totalBillAmount, groupname, userAmount, username) => {
+          console.log("Sent on= "+groupname);
+        // all users from room `room`
+        
       io.sockets.in(groupname).emit('upDateItems', {type: 'items-update',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
       })
 
