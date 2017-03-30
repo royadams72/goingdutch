@@ -53,7 +53,7 @@ getItems(){
   let observable = new Observable((observer:any) => {
 
     this.socket.on('upDateItems', (data:any) => {
-      
+
       observer.next(data);
     })
       return () => {

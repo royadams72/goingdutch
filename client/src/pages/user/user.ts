@@ -9,7 +9,9 @@ import { GroupPage } from '../group/group';
 export class UserPage implements OnInit {
   constructor(private userService: UserService, private navCtrl: NavController) {  }
   private totalBillAmount:number
-  private connection: any;
+  private connection1: any;
+  private connection2: any;
+  private connArray: Array<any> = [];
   private data: any;
   public groups: any = [];
   private n:number = Math.round(Math.random() * (100 - 50));
@@ -18,14 +20,23 @@ export class UserPage implements OnInit {
 
   ngOnInit() {
       //console.log("Fired")
-    this.connection = this.userService.getInvites().subscribe((data) => {
-          this.data = data
-              this.groups.push(this.data)
-      //  console.log(this.data)
+    this.connection1 = this.userService.getInvites().subscribe((data) => {
+      this.data = data
+       this.userService.setUser(this.data.totalBillAmount, this.data.groupname, this.data.address)
+              this.connection1 =  this.userService.getAddress().subscribe(userAddress=> {
+                //console.log(this.data.address)
+          //userAddress = "209 Grange Rd, London E13 0HB";
+                if(userAddress==this.data.address){
+                  this.groups.push(this.data);
+                  console.log(this.groups)
+                }
+              })
+
 
   })
 
-  }
+  this.connArray.push(this.connection1, this.connection2)
+}
   joinGroup(){
 
 
@@ -34,6 +45,9 @@ export class UserPage implements OnInit {
   }
   ngOnDestroy(){
     console.log("unsubscribed")
-   this.connection.unsubscribe();
+    for(let i = 0; i < this.connArray.length; i++){
+      this.connArray[i].unsubscribe()
+    }
+  // this.connection.unsubscribe();
   }
 }
