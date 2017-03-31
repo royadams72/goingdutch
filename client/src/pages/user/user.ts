@@ -23,7 +23,7 @@ export class UserPage implements OnInit {
     this.connection1 = this.userService.getInvites().subscribe((data) => {
       this.data = data
        this.userService.setUser(this.data.totalBillAmount, this.data.groupname, this.data.address)
-              this.connection1 =  this.userService.getAddress().subscribe(userAddress=> {
+              this.connection2 =  this.userService.getAddress().subscribe(userAddress=> {
                 //console.log(this.data.address)
           //userAddress = "209 Grange Rd, London E13 0HB";
                 if(userAddress==this.data.address){

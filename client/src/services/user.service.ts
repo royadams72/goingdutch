@@ -11,7 +11,7 @@ export class UserService {
   private socket: any;
   private url = 'http://localhost:3000';
   public groupname: string;
-  private address:EventEmitter<string> = new EventEmitter();;
+  private address:EventEmitter<string> = new EventEmitter();
   private adminAddress:string;
   public currBillAmount:number;
   public  totalBillAmount:number
@@ -29,7 +29,7 @@ export class UserService {
 
 
 upDateItems(currBillAmount, totalBillAmount,groupname, userAmount, username){
-  this.socket.emit('items-updated',currBillAmount, totalBillAmount, groupname, userAmount, this.username);
+  this.socket.emit('update-receipt',currBillAmount, totalBillAmount, groupname, userAmount, this.username);
 }
 
 public setUser(totalBillAmount, groupname, address){
