@@ -28,8 +28,8 @@ export class AdminService {
     this.socket = io(this.url);
    }
 
-upDateItems(currBillAmount, totalBillAmount,groupname, userAmount, username){
-  this.socket.emit('update-receipt',currBillAmount, totalBillAmount, groupname, userAmount, username);
+upDateItems(totalBillAmount,groupname, userAmount, username){
+  this.socket.emit('update-receipt', totalBillAmount, groupname, userAmount, username);
 }
 
 public setGroup(totalBillAmount, groupname){
@@ -66,7 +66,7 @@ private sendInvite(address){
 sendData(address){
   this.group = new Group(this.groupname, this.totalBillAmount, address);
 
-  return this.http.post('https://goingdutch-1490195424422.firebaseio.com/groups/'+this.groupname+'.json', JSON.stringify(this.group))
+  return this.http.put('https://goingdutch-1490195424422.firebaseio.com/groups/'+this.groupname+'.json', this.group)
   .map((response: Response) => {
 
      //this.joinGroup(this.groupname);
@@ -89,6 +89,10 @@ getItems(){
   })
   return observable;
 }
+
+
+
+
 
 getUserName(){
   return sessionStorage.getItem('username')

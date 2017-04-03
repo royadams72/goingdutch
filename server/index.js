@@ -23,11 +23,11 @@ var io = require('socket.io'),
             //  console.log(clients);
          });
 
-      socket.on('update-receipt', (currBillAmount, totalBillAmount, groupname, userAmount, username) => {
+      socket.on('update-receipt', (totalBillAmount, groupname, userAmount, username) => {
           console.log("Sent on= "+groupname);
         // all users from room `room`
 
-      io.sockets.in(groupname).emit('receipt-updated', {type: 'receipt-updated',currBillAmount: currBillAmount, totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
+      io.sockets.in(groupname).emit('receipt-updated', {type: 'receipt-updated', totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
       })
 
     });

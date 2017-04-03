@@ -17,7 +17,7 @@ export class GroupPage implements OnInit {
   private currBillAmount: number;
   private userAmountTotal:number;
   private userAmount:number;
-  private userAmountArr: UserAmount[] = [];
+  private allUsersTotal: UserAmount[] = [];
   private groupname: string;
   private username:string;
   private userType:string;
@@ -58,13 +58,15 @@ export class GroupPage implements OnInit {
           this.initForm();
           if(adminAddress){
           this.connection3 =  this.adminService.sendData(adminAddress).subscribe(data=> {
-              this.connection2.unsubscribe();
+              this.connection2.unsubscribe(
+                data => console.log(data),
+                (err) => console.log(err));
               this.loaded = true;
               this.loading.dismiss();
               this.initForm();
 
               console.log(this.loaded)
-          })
+          },(err) => console.log(err)); // Reach here if fails)
         }
       })
 
@@ -74,50 +76,34 @@ this.loadReceipt();
 }
 loadReceipt(){
   this.connection = this.adminService.getItems().subscribe((data) => {
-    console.log(data)
-      //Will need an if statment to match username, so will be able to extract correct data
       this.currBillAmount  = this.totalBillAmount;
       this.userAmountTotal = 0;
-     //console.log(data);
       this.data = data;
-
-      if(this.currBillAmount > this.data.currBillAmount){
-        this.currBillAmount = parseInt(this.data.currBillAmount);
-      }else{
-        this.currBillAmount = this.currBillAmount;
-      }
-
-
       this.userAmount = parseInt(this.data.userAmount);
-      console.log(this.data.currBillAmount)
-     let userInfo = new UserAmount(this.data.userAmount,this.data.username)
-
-let found = this.userExists(this.data.username, this.userAmountArr);
-//let selectedCategory = this.userAmountArr.filter(username => this.userAmountArr[0].username === this.data.username)[0];
-
-if(found){
-    for(let i = 0; i < this.userAmountArr.length; i++){
-        if(this.userAmountArr[i].username === this.data.username){
-         //console.log(this.userAmountArr[i])
-              this.userAmountArr[i] = userInfo;
+  let userInfo = new UserAmount(this.data.userAmount,this.data.username)
+  let found = this.userExists(this.data.username, this.allUsersTotal);
+  //Uses an array to keep track of totals
+     /* If this user found in array, find index and replace
+     if not found, push */
+  if(found){
+      for(let i = 0; i < this.allUsersTotal.length; i++){
+          if(this.allUsersTotal[i].username === this.data.username){
+                this.allUsersTotal[i] = userInfo;
+          }
         }
-      }
-    }else{
-      this.userAmountArr.push(userInfo);
+      }else{
+        this.allUsersTotal.push(userInfo);
     }
-
-
-    for(let i = 0; i < this.userAmountArr.length; i++){
-        if(this.userAmountArr[i].username !== this.data.username){
-         this.userAmountTotal = this.userAmountTotal + parseInt(this.userAmountArr[i].userAmount);
-         console.log(this.userAmountTotal)
-        }
+      console.log(this.allUsersTotal)
+    for(let i = 0; i < this.allUsersTotal.length; i++){
+         this.userAmountTotal = this.userAmountTotal + parseInt(this.allUsersTotal[i].userAmount);
       }
 
-        this.currBillAmount  = (this.currBillAmount  - this.userAmount) - this.userAmountTotal;
-//console.log(this.userAmountArr)
-})
+        this.currBillAmount  = (this.currBillAmount) - this.userAmountTotal;
+
+  })
 }
+
 loader(){
   this.loading = this.loadingCtrl.create({
     content: "Please wait..."
@@ -152,9 +138,6 @@ loader(){
     let fArray: FormArray = <FormArray>this.groupForm.get('items');
     const len = fArray.length;
     let itemAmount: number = this.groupForm.get('items').value;
-    //let total:number = 0;
-    //Take userAmount sent back from socket and add back to current bill amount
-    this.currBillAmount  = this.totalBillAmount;
 
     this.userAmount = 0;
     for(let i =0; i < len; i++ ){
@@ -162,8 +145,7 @@ loader(){
 
   }
 
-
-    this.adminService.upDateItems(this.currBillAmount, this.totalBillAmount, this.groupname, this.userAmount, this.username);
+    this.adminService.upDateItems( this.totalBillAmount, this.groupname, this.userAmount, this.username);
 
   }
   ngOnDestroy(){

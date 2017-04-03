@@ -12,7 +12,7 @@ import { StartPage } from '../pages/start/start';
 })
 export class MyApp {
   rootPage = StartPage;
-
+db:any;
   constructor(platform: Platform, statusBar: StatusBar, splashScreen: SplashScreen) {
     platform.ready().then(() => {
       firebase.initializeApp({
@@ -22,6 +22,7 @@ export class MyApp {
         projectId: "goingdutch-1490195424422",
         storageBucket: "goingdutch-1490195424422.appspot.com"
       });
+    this.db =  firebase.database().ref().on('value', snapshot => console.log(snapshot.val()));
       statusBar.styleDefault();
       splashScreen.hide();
     });

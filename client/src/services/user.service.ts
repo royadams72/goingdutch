@@ -1,4 +1,5 @@
 import { Injectable, EventEmitter } from '@angular/core';
+import { Http, Response } from '@angular/http';
 import { Subject } from 'rxjs/Subject';
 import { Geolocation } from 'ionic-native';
 import { Observable } from 'rxjs/Observable';
@@ -22,8 +23,12 @@ export class UserService {
       lat: 4646464646,
       lng: 767676767
   };
-  constructor() {
+  // ref = new Firebase(URL);
+  //var sync = $firebase(ref);
+  //database = firebase.database("hhdhdhdh");
+  constructor(private http: Http) {
     this.socket = io(this.url);
+  //  console.log(this.database);
    }
 
 
@@ -37,10 +42,10 @@ public setUser(totalBillAmount, groupname, address){
   this.totalBillAmount = totalBillAmount;
   this.adminAddress = address;
   this.groupname = groupname;
-  this.getGeoLocation();
+  //this.getGeoLocation();
 }
 
-getLocation(){
+/*getLocation(){
 
 const loc = {type: 'Point', coordinates: [this.location.lng, this.location.lat]};
  return rg.getAddress(loc).then((address) => {
@@ -51,7 +56,7 @@ const loc = {type: 'Point', coordinates: [this.location.lng, this.location.lat]}
    //this.sendInvite(address);
  })
 .catch(error => console.log(error.message));
-}
+}*/
 
 getAddress(){
     //console.log(this.address);
@@ -72,6 +77,18 @@ getInvites(){
   return observable;
 }
 
+fetchList(){//need the token for authentication
+
+  //Get shopping list ingredients from remote db
+  return this.http.get('https://goingdutch-1490195424422.firebaseio.com/groups.json')
+  .map((response: Response) => {
+
+    //  console.log(response.text())
+      return response.json();
+
+  })
+
+}
 getUserName(){
   return sessionStorage.getItem('username')
 }
@@ -81,7 +98,7 @@ setUserName(){
   sessionStorage.setItem('username', this.username);
   //this.username = '';
 }
-public getGeoLocation(){
+/*public getGeoLocation(){
 
 Geolocation.getCurrentPosition()
   .then(
@@ -94,7 +111,7 @@ Geolocation.getCurrentPosition()
   ).catch((error) => {
 console.log('Error getting location', error);
 });
-}
+}*/
   joinGroup(groupname){
   this.socket.emit('group', groupname);
   }
