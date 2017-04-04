@@ -6,7 +6,7 @@ import { Observable } from 'rxjs/Observable';
 import { Location } from '../models/location.model'
 import * as io from 'socket.io-client';
 import rg from 'simple-reverse-geocoder';
-
+import { AngularFire, FirebaseListObservable } from 'angularfire2';
 @Injectable()
 export class UserService {
   private socket: any;
@@ -23,10 +23,11 @@ export class UserService {
       lat: 4646464646,
       lng: 767676767
   };
+  groups:FirebaseListObservable<any>;
   // ref = new Firebase(URL);
   //var sync = $firebase(ref);
   //database = firebase.database("hhdhdhdh");
-  constructor(private http: Http) {
+  constructor(private http: Http, private _af:AngularFire) {
     this.socket = io(this.url);
   //  console.log(this.database);
    }
@@ -88,6 +89,11 @@ fetchList(){//need the token for authentication
 
   })
 
+}
+getGroups(){
+    this.groups = this._af.database.list('/groups') as
+    FirebaseListObservable<any>;
+    return this.groups;
 }
 getUserName(){
   return sessionStorage.getItem('username')

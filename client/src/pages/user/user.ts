@@ -23,11 +23,10 @@ export class UserPage implements OnInit {
           num = this.n.toString()
   private username = "TestUser"+this.num;
   private location: Location;
-  db:any;
-  ref:any;
+
 //ref = firebase.database().ref("users/ada");
 constructor(private userService: UserService, private navCtrl: NavController) {
-  this.db = firebase.database().ref('/groups'); // Get a firebase reference to the root
+
   //this.ref = firebase.database().ref('groups'); // Get a firebase reference to the todos
 
  }
@@ -67,16 +66,16 @@ private fetchGroups(){
       location => {
         const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
          return rg.getAddress(loc).then((address) => {
-           this.connection3 = this.userService.fetchList().subscribe((data) => {
+           this.connection3 = this.userService.getGroups().subscribe((data) => {
 
            this.data = data;
 
-             //this.groups.push(...this.data);
-             this.db.on('value', snapshot => {
+             this.groups.push(...this.data);
 
-               console.log(snapshot.key, snapshot.val())
 
-             });
+               console.log(this.groups[0].address)
+
+
 
            })
          })
