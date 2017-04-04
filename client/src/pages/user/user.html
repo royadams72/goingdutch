@@ -10,7 +10,7 @@
   <h2>User Page</h2>
 
   <ion-list>
-  <button *ngFor="let group of groups" ion-button type="button" (click)="joinGroup()" block margin-top>{{ group.groupname }}</button>
+  <button *ngFor="let group of groups" ion-button type="button" (click)="joinGroup(group.totalBillAmount, group.groupname )" block margin-top>{{ group.groupname }}, £{{group.totalBillAmount}}</button>
 </ion-list>
 
 
