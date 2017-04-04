@@ -9,12 +9,15 @@ import { GroupPage } from '../pages/group/group';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
+
 import { UserService } from '../services/user.service';
 import { AdminService } from '../services/admin.service';
-import { LocationService } from '../services/location.service';
+import { FeedbackService } from '../services/feedback.service';
+import { AfService } from '../services/af.service';
+
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import { AngularFireModule } from 'angularfire2';
-
+import { GroupService } from '../services/group.service';
 
 
 @NgModule({
@@ -52,7 +55,9 @@ import { AngularFireModule } from 'angularfire2';
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     UserService,
     AdminService,
-    LocationService
+    AfService,
+    GroupService,
+    FeedbackService
   ]
 })
 export class AppModule {}

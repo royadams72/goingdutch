@@ -14,8 +14,7 @@ export class AdminPage implements OnInit {
   ngOnInit() {}
 
   setGroup(){
-    //this.adminService.setGroup(this.totalBillAmount, this.groupname);
     this.navCtrl.push(GroupPage, {totalBillAmount: this.totalBillAmount, groupname:this.groupname, username: this.username});
-    //console.log(this.billAmount,this.groupname)
+
   }
 }

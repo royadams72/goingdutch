@@ -1,11 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { NavController } from 'ionic-angular';
-import { UserService } from '../../services/user.service';
+import { NavController, LoadingController, AlertController } from 'ionic-angular';
+import { AfService } from '../../services/af.service';
+import { FeedbackService } from '../../services/feedback.service';
 import { GroupPage } from '../group/group';
 import { Geolocation } from 'ionic-native';
-import { Location } from '../models/location.model';
 import rg from 'simple-reverse-geocoder';
-import  firebase  from 'firebase';
+
 @Component({
   selector: 'page-user',
   templateUrl: 'user.html',
@@ -14,20 +14,26 @@ export class UserPage implements OnInit {
 
   private totalBillAmount:number
   private connection: any;
-
-  private connArray: Array<any> = [];
-  private data: any;
   public groups: any = [];
   private n:number = Math.round(Math.random() * (100 - 50));
           num = this.n.toString()
   private username = "TestUser"+this.num;
   private location: Location;
+  private loading:any;
+  private loaded:boolean;
 
-constructor(private userService: UserService, private navCtrl: NavController) {
+constructor(private navCtrl: NavController,
+            private afService:AfService,
+            private loadingCtrl: LoadingController,
+            private alertCtrl: AlertController,
+            private FeedbackService: FeedbackService) {
+              this.loaded = false;
+              this.loader();
 
  }
   ngOnInit() {
     this.fetchGroups();
+
     }
 
 private fetchGroups(){
@@ -35,25 +41,38 @@ private fetchGroups(){
     .then((location) => {
         const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
          return rg.getAddress(loc).then((userAddress) => {
-            this.connection = this.userService.getGroups().subscribe((data) => {
+            this.connection = this.afService.getGroups().subscribe((data) => {
              for(let i = 0; i < data.length; i++){
                if(data[i].address == userAddress){
                  this.groups.push(data[i]);
                }
              }
-               console.log(this.groups)
+            this.loaded = true;
+            this.loading.dismiss();
+              // console.log(this.groups)
            })
          })
-        .catch(error => console.log(error.message));
+        .catch(error => {return this.FeedbackService.showError(error.message)});
       }
     ).catch((error) => {
-  console.log('Error getting location', error);
+  return this.FeedbackService.showError(error.message);
   });
 }
-joinGroup(totalBillAmount, groupname){
+
+private joinGroup(totalBillAmount, groupname){
     this.navCtrl.push(GroupPage, {totalBillAmount: totalBillAmount, groupname:groupname, username: this.username, userType: "user"});
 
 }
+private loader(){
+  this.loading = this.loadingCtrl.create({
+    content: "Looking for nearby Groups<br>Please wait..."
+  });
+  this.loading.present();
+}
+
+
+
+
   ngOnDestroy(){
     console.log("unsubscribed")
   this.connection.unsubscribe();

@@ -9,6 +9,7 @@ var io = require('socket.io'),
 
       socket.on('disconnect', () => {
         console.log('User disconnected...');
+
       })
 
 
@@ -18,6 +19,7 @@ var io = require('socket.io'),
       })
 
       socket.on('group', function(groupname) {
+      
              socket.join(groupname);
             // var clients = io.sockets.clients(groupname); // all users from room `room`
             //  console.log(clients);
