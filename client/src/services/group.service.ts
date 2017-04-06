@@ -4,19 +4,24 @@ import * as io from 'socket.io-client';
 import { AngularFire, FirebaseListObservable } from 'angularfire2';
 import { Group } from '../models/group.model';
 import { Observable } from 'rxjs/Observable';
-
+import { AfService } from '../services/af.service';
+import { UserAmount } from '../models/userAmount.model';
 @Injectable()
 export class GroupService {
   private socket: any;
   private url = 'http://localhost:3000';
   updateArr = new BehaviorSubject<Array<any>>([]);
-  
-constructor(private _af:AngularFire) {
+
+constructor(private _af:AngularFire,
+            private afService:AfService,) {
             this.socket = io(this.url);
+
  }
 
   upDateItems(totalBillAmount,groupname, userAmount, username){
-    this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, username);
+    let userInfo = new UserAmount(userAmount, username, groupname)
+        this.afService.updateUserAmount(userInfo);//Update firebase database
+        this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, username);
   }
 
   getItems(){

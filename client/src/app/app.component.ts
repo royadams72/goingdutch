@@ -23,7 +23,7 @@ export class MyApp {
       platform.ready().then(() => {
         this.groupService.updateArr.subscribe((data:UserAmount[])=>{
         this.allUsers = data;
-        //  console.log(typeof data)
+      
         })
       statusBar.styleDefault();
       splashScreen.hide();
