@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, EventEmitter, Output } from '@angular/core';
 import { NavParams } from 'ionic-angular';
 import { AfService } from '../../services/af.service';
 import { GroupService } from '../../services/group.service';
@@ -21,7 +21,7 @@ export class GroupPage implements OnInit {
   private currBillAmount: number;
   private userAmountTotal:number;
   private userAmount:number;
-  private allUsersTotal: UserAmount[] = [];
+  private allUsers: UserAmount[] = [];
   private groupname: string;
   private username:string;
   private userType:string;
@@ -41,6 +41,7 @@ export class GroupPage implements OnInit {
      this.userType = navParams.get('userType');
      this.userAmountTotal = 0;
      this.lm = "Please wait.."
+
     // console.log(this.username)
 
    }
@@ -49,10 +50,12 @@ ngOnInit() {
     this.loaded = false;
     this.feedbackService.startLoader(this.lm);
     if(this.userType==='user'){
-      console.log(this.groupname)
+      // console.log(this.username)
         this.groupService.joinGroup(this.groupname);
+      //  this.afService.getSetUsers(this.groupname).subscribe(data=>console.log(data))//
         this.loaded = true;
         this.feedbackService.stopLoader();
+        //this.afService.setUsers(this.groupname);
         this.initForm();
       }else{
     Geolocation.getCurrentPosition()
@@ -60,53 +63,68 @@ ngOnInit() {
           const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
             return rg.getAddress(loc).then((address) => {
                 this.group = new Group(this.groupname, this.totalBillAmount, address);
-                  console.log(this.group)
-                this.afService.setGroup(this.group);
+                  //console.log(this.group)
+               this.afService.setGroup(this.group);
+                this.afService.createUser(this.username, this.groupname)
                 this.groupService.joinGroup(this.groupname);
                 this.loaded = true;
                 this.feedbackService.stopLoader();
+                //this.afService.setUsers();
                 this.initForm();
-                console.log(this.loaded)
+              //  console.log(this.loaded)
               }).catch(error => console.log(error.message));
             }//End Location
         ).catch((error) => {
         console.log('Error getting location', error);
       });
   }
+
 this.loadReceipt();
 }
 loadReceipt(){
   this.connection = this.groupService.getItems().subscribe((data) => {
+
       this.currBillAmount  = this.totalBillAmount;
       this.userAmountTotal = 0;
       this.data = data;
       this.userAmount = parseInt(this.data.userAmount);
-  let userInfo = new UserAmount(this.data.userAmount,this.data.username)
-  let found = this.userExists(this.data.username, this.allUsersTotal);
+  let userInfo = new UserAmount(this.data.userAmount,this.data.username, this.data.groupname)
+  let found = this.userExists(this.data.username, this.allUsers);
+//  console.log(this.data.groupname)
+    //console.log(typeof this.allUsers)
   //Uses an array to keep track of totals
      /* If this user found in array, find index and replace
      if not found, push */
+
+       //console.log(data[i].key)}
+
   if(found){
-      for(let i = 0; i < this.allUsersTotal.length; i++){
-          if(this.allUsersTotal[i].username === this.data.username){
-                this.allUsersTotal[i] = userInfo;
+      for(let i = 0; i < this.allUsers.length; i++){
+
+          if(this.allUsers[i].username === this.data.username){
+                this.allUsers[i] = userInfo;
           }
         }
       }else{
-        this.allUsersTotal.push(userInfo);
+        this.allUsers.push(userInfo);
     }
-      console.log(this.allUsersTotal)
-    for(let i = 0; i < this.allUsersTotal.length; i++){
-         this.userAmountTotal = this.userAmountTotal + parseInt(this.allUsersTotal[i].userAmount);
+
+    this.groupService.update(this.allUsers);
+  //  console.log()
+if(this.userType !='user'){
+    this.afService.updateUserAmount(this.allUsers);
+}
+    for(let i = 0; i < this.allUsers.length; i++){
+         this.userAmountTotal = this.userAmountTotal + parseInt(this.allUsers[i].userAmount);
       }
 
         this.currBillAmount  = (this.currBillAmount) - this.userAmountTotal;
 
   })
 }
+private ifReceiptExists(){
 
-
-
+}
 private userExists(username, arr) {
    return arr.some(function(el) {
      return el.username === username;
@@ -138,6 +156,7 @@ private calculateItems(){
     for(let i =0; i < len; i++ ){
       this.userAmount += +itemAmount[i];
     }
+
     this.groupService.upDateItems( this.totalBillAmount, this.groupname, this.userAmount, this.username);
 }
 

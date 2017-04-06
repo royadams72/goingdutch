@@ -1,4 +1,5 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output} from '@angular/core';
+import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import * as io from 'socket.io-client';
 import { AngularFire, FirebaseListObservable } from 'angularfire2';
 import { Group } from '../models/group.model';
@@ -8,15 +9,14 @@ import { Observable } from 'rxjs/Observable';
 export class GroupService {
   private socket: any;
   private url = 'http://localhost:3000';
-  private username:string;
-
-
+  updateArr = new BehaviorSubject<Array<any>>([]);
+  
 constructor(private _af:AngularFire) {
-                  this.socket = io(this.url);
+            this.socket = io(this.url);
  }
 
   upDateItems(totalBillAmount,groupname, userAmount, username){
-    this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, this.username);
+    this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, username);
   }
 
   getItems(){
@@ -32,11 +32,15 @@ constructor(private _af:AngularFire) {
       return observable;
   }
 
+update(arr: Array<any>){
 
-  joinGroup(groupname){
+  this.updateArr.next(arr);
+}
+
+public  joinGroup(groupname){
     this.socket.connect();
     this.socket.emit('group', groupname);
-    console.log(groupname)
+  //  console.log(groupname)
   }
 
 }

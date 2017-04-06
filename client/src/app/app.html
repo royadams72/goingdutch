@@ -1,1 +1,19 @@
-<ion-nav [root]="rootPage"></ion-nav>
+
+<ion-menu [content]="nav"  persistent="true"><!--Name nav to bind this menu to-->
+  <ion-header>
+    <ion-toolbar>
+      <ion-title text-center>Overview</ion-title>
+
+    </ion-toolbar>
+</ion-header>
+<ion-content padding>
+      <ion-list>
+           <ion-item menuClose detail-none>Close Menu</ion-item>
+         <ion-item  *ngFor="let user of allUsers">{{user.username}} [£{{user.userAmount}}]</ion-item>
+
+
+    </ion-list>
+  </ion-content>
+
+</ion-menu><!--End slide out menu-->
+<ion-nav [root]="rootPage" #nav></ion-nav>

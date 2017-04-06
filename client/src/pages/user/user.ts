@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController, LoadingController, AlertController } from 'ionic-angular';
 import { AfService } from '../../services/af.service';
 import { FeedbackService } from '../../services/feedback.service';
@@ -10,7 +10,7 @@ import rg from 'simple-reverse-geocoder';
   selector: 'page-user',
   templateUrl: 'user.html',
 })
-export class UserPage implements OnInit {
+export class UserPage implements OnInit, OnDestroy {
 
   private totalBillAmount:number
   private connection: any;
@@ -42,6 +42,7 @@ private fetchGroups(){
         const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
          return rg.getAddress(loc).then((userAddress) => {
             this.connection = this.afService.getGroups().subscribe((data) => {
+              this.groups = [];
              for(let i = 0; i < data.length; i++){
                if(data[i].address == userAddress){
                  this.groups.push(data[i]);
