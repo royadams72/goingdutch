@@ -5,7 +5,8 @@ import { Group } from '../../models/group.model';
 import { FeedbackService } from '../../services/feedback.service';
 import { GroupPage } from '../group/group';
 import { Geolocation } from 'ionic-native';
-import rg from 'simple-reverse-geocoder';
+import { HaversineService, GeoCoord} from "ng2-haversine";
+//import rg from 'simple-reverse-geocoder';
 
 @Component({
   selector: 'page-user',
@@ -22,14 +23,15 @@ export class UserPage implements OnInit, OnDestroy {
   private location: Location;
   private loading:any;
   private loaded:boolean;
-   private address:string;
-   private lat:any;
-   private ln:any;
+  private address:string;
+  private lat:any;
+  private ln:any;
 constructor(private navCtrl: NavController,
             private afService:AfService,
             private loadingCtrl: LoadingController,
             private alertCtrl: AlertController,
-            private FeedbackService: FeedbackService) {
+            private FeedbackService: FeedbackService,
+            private hsService: HaversineService) {
               this.loaded = false;
               this.loader();
 
@@ -40,26 +42,37 @@ constructor(private navCtrl: NavController,
     }
 
 private fetchGroups(){
+  //Get this users coords 
   Geolocation.getCurrentPosition()
     .then((location) => {
         const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
-        this.lat = location.coords.latitude; this.ln = location.coords.longitude
-         return rg.getAddress(loc).then((userAddress) => {
-           this.address = userAddress
-            this.connection = this.afService.getGroups().subscribe((data:Group[]) => {
+          let userAddress: GeoCoord = {
+            latitude: location.coords.latitude,
+            longitude: location.coords.longitude
+            };
+           //Get groups from firebase
+            this.connection = this.afService.getGroups().subscribe((firebaseData:Group[]) => {
               this.groups = [];
-                  for (let i in data) {
-                    if(data[i].address == userAddress){
-                      let groupInfo = new Group(data[i].groupname,data[i].totalBillAmount, data[i].address, data[i].complete);
-                      this.groups.push(groupInfo);
+                  for (let i in firebaseData) {
+                      if(firebaseData[i].address){//When addres is found in data
+                        //Place into GeoCoord Object
+                        let groupAddress: GeoCoord = {
+                            latitude: firebaseData[i].address.latitude,
+                            longitude: firebaseData[i].address.longitude
+                            };
+                            //Get the distanceInMeters of the two points
+                        let distanceInMeters = this.hsService.getDistanceInMeters(userAddress, groupAddress);
+
+                        if(distanceInMeters < 10){
+                          let groupInfo = new Group(firebaseData[i].groupname, firebaseData[i].totalBillAmount, firebaseData[i].address, firebaseData[i].complete);
+                          this.groups.push(groupInfo);
+                      }
                     }
                   }
 
             this.loaded = true;
             this.loading.dismiss();
            })
-         })
-        .catch(error => {return this.FeedbackService.showError(error.message)});
       }
     ).catch((error) => {
   return this.FeedbackService.showError(error.message);

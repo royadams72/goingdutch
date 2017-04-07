@@ -18,7 +18,7 @@ import { AfService } from '../services/af.service';
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import { AngularFireModule } from 'angularfire2';
 import { GroupService } from '../services/group.service';
-
+import { HaversineService } from "ng2-haversine";
 
 @NgModule({
   declarations: [
@@ -57,7 +57,8 @@ import { GroupService } from '../services/group.service';
     AdminService,
     AfService,
     GroupService,
-    FeedbackService
+    FeedbackService,
+    HaversineService
   ]
 })
 export class AppModule {}

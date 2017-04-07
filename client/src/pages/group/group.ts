@@ -7,8 +7,8 @@ import { UserAmount } from '../../models/userAmount.model';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Group } from '../../models/group.model'
 import { Geolocation } from 'ionic-native';
-import { Location } from '../models/location.model';
-import rg from 'simple-reverse-geocoder';
+import { Location } from '../../models/location.model';
+//import rg from 'simple-reverse-geocoder';
 import  'rxjs/Rx'
 @Component({
   selector: 'page-group',
@@ -56,14 +56,14 @@ ngOnInit() {
     Geolocation.getCurrentPosition()
         .then((location) => {
           const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
-            return rg.getAddress(loc).then((address) => {
+          let address:Location = new Location(location.coords.latitude, location.coords.longitude)
                 this.group = new Group(this.groupname, this.totalBillAmount, address, false);
                 this.afService.setGroup(this.group, this.groupname);
                 this.groupService.joinGroup(this.groupname);
                 this.loaded = true;
                 this.feedbackService.stopLoader();
                 this.initForm();
-              }).catch(error => console.log(error.message));
+
             }//End Location
         ).catch((error) => {
         console.log('Error getting location', error);
