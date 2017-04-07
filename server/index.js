@@ -2,7 +2,8 @@ var io = require('socket.io'),
     http = require('http'),
     server = http.createServer(),
     io = io.listen(server);
-
+    //io.connect("http://192.168.0.4:3000/");
+//192.168.0.4
     io.sockets.on('connection', function(socket){
       //socket.join('groupname');
       console.log('User connected');

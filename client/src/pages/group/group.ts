@@ -57,8 +57,8 @@ ngOnInit() {
         .then((location) => {
           const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
             return rg.getAddress(loc).then((address) => {
-                this.group = new Group(this.groupname, this.totalBillAmount, address);
-               this.afService.setGroup(this.group);
+                this.group = new Group(this.groupname, this.totalBillAmount, address, false);
+                this.afService.setGroup(this.group, this.groupname);
                 this.groupService.joinGroup(this.groupname);
                 this.loaded = true;
                 this.feedbackService.stopLoader();
@@ -73,13 +73,16 @@ ngOnInit() {
 this.loadReceipt();
 }
 loadReceipt(){
-  this.afService.getUser(this.username, this.groupname);//bind to firebase groups, which is updated in the group service
+  this.afService.getUser(this.username, this.groupname);//binds to firebase groups,
+
+  //which is updated in the group service, when the socket is emitted to the server
   if(this.receiptExists() != undefined){
     let loadfirebase = this.afService.getUsers(this.groupname).subscribe(
       (data)=>{
+
         for(let i = 0; i < data.length; i++){
           let userInfo = new UserAmount(data[i].userAmount,data[i].username, data[i].groupname);
-            this.allUsers.push(userInfo)
+            this.allUsers.push(userInfo);
         }
         //this.allUsers = allUsers;
         console.log(this.allUsers)

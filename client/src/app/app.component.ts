@@ -21,9 +21,10 @@ export class MyApp {
               splashScreen: SplashScreen,
               private groupService: GroupService) {
       platform.ready().then(() => {
+        //this updates list of users on the slide out menu
         this.groupService.updateArr.subscribe((data:UserAmount[])=>{
         this.allUsers = data;
-      
+
         })
       statusBar.styleDefault();
       splashScreen.hide();

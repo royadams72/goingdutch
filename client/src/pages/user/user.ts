@@ -1,6 +1,7 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavController, LoadingController, AlertController } from 'ionic-angular';
 import { AfService } from '../../services/af.service';
+import { Group } from '../../models/group.model';
 import { FeedbackService } from '../../services/feedback.service';
 import { GroupPage } from '../group/group';
 import { Geolocation } from 'ionic-native';
@@ -21,7 +22,9 @@ export class UserPage implements OnInit, OnDestroy {
   private location: Location;
   private loading:any;
   private loaded:boolean;
-
+   private address:string;
+   private lat:any;
+   private ln:any;
 constructor(private navCtrl: NavController,
             private afService:AfService,
             private loadingCtrl: LoadingController,
@@ -40,17 +43,20 @@ private fetchGroups(){
   Geolocation.getCurrentPosition()
     .then((location) => {
         const loc = {type: 'Point', coordinates: [location.coords.longitude, location.coords.latitude]};
+        this.lat = location.coords.latitude; this.ln = location.coords.longitude
          return rg.getAddress(loc).then((userAddress) => {
-            this.connection = this.afService.getGroups().subscribe((data) => {
+           this.address = userAddress
+            this.connection = this.afService.getGroups().subscribe((data:Group[]) => {
               this.groups = [];
-             for(let i = 0; i < data.length; i++){
-               if(data[i].address == userAddress){
-                 this.groups.push(data[i]);
-               }
-             }
+                  for (let i in data) {
+                    if(data[i].address == userAddress){
+                      let groupInfo = new Group(data[i].groupname,data[i].totalBillAmount, data[i].address, data[i].complete);
+                      this.groups.push(groupInfo);
+                    }
+                  }
+
             this.loaded = true;
             this.loading.dismiss();
-              // console.log(this.groups)
            })
          })
         .catch(error => {return this.FeedbackService.showError(error.message)});
