@@ -8,26 +8,31 @@
 
 <ion-content padding text-center>
   <h2>Choose your action</h2>
-
-  <ion-list>
-    <ion-item>
+   <form (ngSubmit)="setGroup(f)"  #f="ngForm">
+<ion-list>
+  <ion-item>
     <ion-label floating>Amount of Receipt/Bill</ion-label>
-    <ion-input type="number" [(ngModel)]="totalBillAmount" required></ion-input>
-      </ion-item>
-
+    <ion-input type="number" name="totalBillAmount" ngModel required></ion-input>
+  </ion-item>
   <ion-item>
-
     <ion-label floating>Group Name</ion-label>
-    <ion-input type="text" [(ngModel)]="groupname" required></ion-input>
+    <ion-input type="text" name="groupname" ngModel required></ion-input>
   </ion-item>
+  <p>
+    Enter a four(4) digit code, to give to members of the group (Numbers only)
+  </p>
   <ion-item>
 
-    <ion-label floating>User Name</ion-label>
-    <ion-input type="text" [(ngModel)]="username" required></ion-input>
-  </ion-item>
-  <button ion-button type="button" (click)="setGroup()" block margin-top>Start Group</button>
-</ion-list>
+    <ion-label floating>Group Code</ion-label>
 
+    <ion-input type="number" name="groupcode" ngModel  maxlength="4" minlength="4" required></ion-input>
+  </ion-item>
+  <button ion-button type="submit" block margin-top>Start Group</button>
+</ion-list>
+<p>
+  {{errorTxt}}
+</p>
+</form>
 
 
 </ion-content>

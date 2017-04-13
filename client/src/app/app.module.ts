@@ -16,9 +16,20 @@ import { FeedbackService } from '../services/feedback.service';
 import { AfService } from '../services/af.service';
 
 import { AgmCoreModule } from 'angular2-google-maps/core';
-import { AngularFireModule } from 'angularfire2';
+import { AngularFireModule, AuthMethods, AuthProviders } from 'angularfire2';
 import { GroupService } from '../services/group.service';
 import { HaversineService } from "ng2-haversine";
+
+const afConfig = {
+  apiKey: "AIzaSyC3qAPEduU2aFCHrgcEcyzOM-gcp_7-3dg",
+  authDomain: "goingdutch-1490195424422.firebaseapp.com",
+  databaseURL: "https://goingdutch-1490195424422.firebaseio.com",
+  storageBucket: "goingdutch-1490195424422.appspot.com"
+}
+const afAuthConfig = {
+  provider: AuthProviders.Anonymous,
+  method: AuthMethods.Anonymous
+};
 
 @NgModule({
   declarations: [
@@ -33,12 +44,7 @@ import { HaversineService } from "ng2-haversine";
     AgmCoreModule.forRoot({
       apiKey:'AIzaSyBzC65IojRmZa8QArAXB0UsFFEf3HRnXc0'
     }),
-    AngularFireModule.initializeApp({
-      apiKey: "AIzaSyC3qAPEduU2aFCHrgcEcyzOM-gcp_7-3dg",
-      authDomain: "goingdutch-1490195424422.firebaseapp.com",
-      databaseURL: "https://goingdutch-1490195424422.firebaseio.com",
-      storageBucket: "goingdutch-1490195424422.appspot.com"
-    })
+    AngularFireModule.initializeApp(afConfig, afAuthConfig)
 
   ],
   bootstrap: [IonicApp],

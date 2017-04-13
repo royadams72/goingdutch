@@ -11,15 +11,18 @@ export class FeedbackService {
               private alertCtrl: AlertController) {
 
    }
+
    public startLoader(message:string){
     this.loading = this.loadingCtrl.create({
        content: message
      });
      this.loading.present();
    }
+
    public stopLoader(){
        this.loading.dismiss();
    }
+
    public showError(error:string) {
          let alert = this.alertCtrl.create({
            title: 'There has been a problem',

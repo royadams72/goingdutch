@@ -20,9 +20,14 @@ constructor(private _af:AngularFire,
 
   upDateItems(totalBillAmount,groupname, userAmount, username){
     let userInfo = new UserAmount(userAmount, username, groupname)
-        this.afService.updateUserAmount(userInfo);//Update firebase database
+        this.afService.updateUserAmount(userInfo, username, groupname);//Update firebase database
         this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, username);
   }
+
+  disconnectUsers(groupname){
+        this.socket.emit('completed', groupname);
+  }
+
 
   getItems(){
       //This observes info being sent to socket, for calculation
@@ -37,8 +42,18 @@ constructor(private _af:AngularFire,
       return observable;
   }
 
-update(arr: Array<any>){
+  checkIfComplete(){
+      //Function for users can watch for when administrator has marked receipt as completed
+      let observable = new Observable((observer:any) => {
+        this.socket.on('receipt-completed', (data) => {
+          console.log("observable-fired")
+          observer.next(data);
+        })
+      })
+      return observable;
+  }
 
+update(arr: Array<any>){
   this.updateArr.next(arr);
 }
 

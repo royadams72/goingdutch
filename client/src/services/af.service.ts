@@ -4,42 +4,76 @@ import { Group } from '../models/group.model';
 import { UserAmount } from '../models/userAmount.model';
 @Injectable()
 export class AfService {
-    private  groups:FirebaseObjectObservable<Group[]>;
+    private  groups:FirebaseListObservable<Group[]>;
+    private  group:FirebaseObjectObservable<Group>;
     private allUsers:FirebaseListObservable<UserAmount[]>;
-    private userInfo:FirebaseListObservable<any>;
+    private userInfo:FirebaseObjectObservable<any>;
     private user:FirebaseObjectObservable<any>;
 
     constructor(private _af:AngularFire) {
-    this.getGroups();
+  //  this.getGroups(false);
     //this.getSetUsers();
    }
-
-public createUser(username, groupname){
-return this.userInfo = this._af.database.list('/userTotals/'+username) as FirebaseListObservable<any>;
-
+public login(){
+    this._af.auth.login();
 }
+
+
+
+public getInfo(){
+ return this._af.auth.subscribe(user => {
+   if(!user){
+       console.log("No user")
+       this.login();
+       return;
+       }
+      // console.log(user)
+ });// user info is inside auth object
+}
+
 
 getUsers(groupname:string){
   return this.allUsers = this._af.database.list('/userTotals/'+groupname) as FirebaseListObservable<any>;
 }
 
-public getUser(username:string = '', groupname:string){
-  return this.user = this._af.database.object('/userTotals/'+groupname+"/"+username, {preserveSnapshot: true}) as FirebaseObjectObservable<any>;
+public getUser(username:string, groupname:string){
+  return (this._af.database.object('/userTotals/'+groupname+"/"+username) as FirebaseObjectObservable<any>)
 }
 
-public getGroups(){
-  return this.groups = this._af.database.object('/groups') as FirebaseObjectObservable<Group[]>;
+public getGroups(bool, username){
 
-}
+  return (this.groups = this._af.database.list('/groups', {query: {
+        orderByChild: 'completed',
+        equalTo: bool,
+
+      }}))
+    }
+
+    public updateGroupmembers(groupname, arr){
+
+      return (this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<Group>).update({groupmembers: arr});
+        }
+
+public setGroupComplete(groupname:string, toggle:boolean){
+  (this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<Group>).update({ completed: toggle });
+  }
+
+
 //This is called in group service, when socket is emitted
-public updateUserAmount(user){
-  this.user.remove().then(
-    ()=>{
-      console.log(user);
-      return  this.user.set(user)
-    })
+public updateUserAmount(user, username, groupname){
+    return  (this._af.database.object('/userTotals/'+groupname+"/"+username) as FirebaseObjectObservable<any>).update(user);
 }
 public setGroup(group:Group, groupname:string){
   return (this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<Group>).set(group);
   }
+
+public checkifInGroup(groupname){
+  return (this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<any>);
+}
+
+public deleteReceipt(groupname){
+  (this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<Group>).remove();
+  (this._af.database.object('/userTotals/'+groupname) as FirebaseObjectObservable<Group>).remove();
+}
+
 }

@@ -9,9 +9,8 @@
 
 <ion-content padding text-center>
   <h2>User Page</h2>
- {{lat}}, {{ln}} 
   <ion-list>
-  <button  *ngFor="let group of groups" ion-button type="button" [disabled]="group.complete" (click)="joinGroup(group.totalBillAmount, group.groupname )" block margin-top>{{ group.groupname }}, £{{group.totalBillAmount}}</button>
+  <button  *ngFor="let group of groups" ion-button type="button" (click)="joinGroup(group.totalBillAmount, group.groupname, group.completed, group.groupcode, group.admin)" block margin-top>{{ group.groupname }}, £{{group.totalBillAmount}}</button>
 </ion-list>
 
 

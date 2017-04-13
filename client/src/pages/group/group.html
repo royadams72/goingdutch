@@ -2,7 +2,7 @@
   <ion-navbar>
 
     <ion-title text-center>
-      Group: {{ groupname }}dsds
+      Group: {{ groupname }}
     </ion-title>
     <button ion-button menuToggle right>
       <ion-icon name="menu"></ion-icon>
@@ -13,6 +13,7 @@
 <ion-content padding text-center>
   <h3>Enter Amount(s)</h3>
   <h4>Bill Amount: {{ currBillAmount }}</h4>
+  <h4>Your payment: {{ userAmount }}</h4>
   <form *ngIf="loaded" [formGroup]="groupForm">
 
    <ion-list formArrayName="items">
@@ -21,8 +22,9 @@
          <ion-input type="number" [formControlName]='i' (keyup)="calculateItems()"></ion-input>
       </ion-item>
    </ion-list>
- <button ion-button block type="button" (click)="addItemFields()">Add More Items</button>
-
+ <button *ngIf="!completed" ion-button block type="button" (click)="addItemFields()">Add More Items</button>
+  <button *ngIf="completed && userType=='admin'" ion-button block type="button" (click)="deleteReceipt()">Delete Receipt</button>
+<button *ngIf="!completed && userType=='admin'" ion-button block type="button" (click)="onCompleted()" margin-top>Mark as complete and save</button>
  </form>
 
 

@@ -8,10 +8,10 @@
 <ion-content padding text-center>
   <h2>Choose your action</h2>
 
-<button ion-button type="button" (click)="setAdmin()" block margin-top>Administrator</button>
+<button ion-button type="button" (click)="onAction('createGroup')" block margin-top>Create Group</button>
 
-<button ion-button type="button" (click)="setUser()" block margin-top>User</button>
+<button ion-button type="button" (click)="onAction('joinGroup')" block margin-top>Join Group</button>
 
-
+<button ion-button type="button" (click)="onAction('prevGroups')" block margin-top>Previous Groups</button>
 
 </ion-content>
