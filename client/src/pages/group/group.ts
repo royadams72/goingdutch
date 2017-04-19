@@ -37,6 +37,9 @@ export class GroupPage implements OnInit {
   private data:any;
   private groupcode:number;
   private groupmembers:Array<any> = [];
+  private action:string;
+  private oldAmount:number = 0;
+  //private isRejoining:boolean = false;
   constructor(private navParams: NavParams,
               private afService:AfService,
               private groupService: GroupService,
@@ -52,98 +55,98 @@ export class GroupPage implements OnInit {
      this.groupcode = navParams.get('groupcode');
      this.userAmountTotal = 0;
      this.lm = "Please wait..";
-     this.conn3 = this.afService.checkifInGroup(this.groupname)
-     .subscribe((data)=>{
-        for( let i = 0; i < data.groupmembers.length; i++){
-          this.groupmembers = data.groupmembers.slice();
-        }
-        if(this.groupmembers.indexOf(this.username) === -1){
-            this.groupmembers.push(this.username)
-        }
-         this.afService.updateGroupmembers(this.groupname, this.groupmembers)
-         .then((data)=>{
-           console.log(this.groupmembers)
-         })
+     this.action = navParams.get('action');
 
-
-     })
 
 
    }
 
 ngOnInit() {
 
-   //console.log(this.userType, this.completed)
+   console.log(this.userType, this.action)
     this.loaded = false;
-    //this.feedbackService.startLoader(this.lm);
+    //
     if(this.userType==='user'){
         this.groupService.joinGroup(this.groupname);
-
         this.loaded = true;
-      //  this.feedbackService.stopLoader();
-
       this.conn2 = this.groupService.checkIfComplete().subscribe((data)=>{
           if(data){
             this.completed = true;
-
+            this.setUserComlpeted()
           }
-
         }
       )
       this.initForm();
-    }else if (this.userType == 'admin'){
-    //  console.log(this.groupcode)
+    }else if (this.userType == 'admin' && this.action == "create_group"){
+      this.feedbackService.startLoader("Creating Group, please wait...");
+      Geolocation.getCurrentPosition()
+          .then((location) => {
+          //When creating a group
+            let address:Location = new Location(location.coords.latitude, location.coords.longitude);
+                console.log("fired")
+                  this.group = new Group(this.groupname, this.username,this.totalBillAmount, address, false, this.groupcode, [this.username]);
+                  this.afService.setGroup(this.group, this.groupname);
+                  this.groupService.joinGroup(this.groupname);
+                  this.loaded = true;
+                  this.initForm();
+                  this.feedbackService.stopLoader();
+              }//End Location
+          ).catch((error) => {
+          console.log('Error getting location', error);
+        });
+  }else if (this.userType == 'admin'){
         this.groupService.joinGroup(this.groupname);
         this.loaded = true;
-      //  this.feedbackService.stopLoader();
         this.initForm();
-  }else{
-    Geolocation.getCurrentPosition()
-        .then((location) => {
-        //When creating a group
-          let address:Location = new Location(location.coords.latitude, location.coords.longitude);
-              console.log("fired")
-                this.group = new Group(this.groupname, this.username,this.totalBillAmount, address, false, this.groupcode, [this.username]);
-                this.afService.setGroup(this.group, this.groupname);
-                this.groupService.joinGroup(this.groupname);
-                this.loaded = true;
-              //  this.feedbackService.stopLoader();
-                this.initForm();
-
-            }//End Location
-        ).catch((error) => {
-        console.log('Error getting location', error);
-      });
   }
+
+
 
 this.loadReceipt();
 
-console.log(this.connections)
 }
 loadReceipt(){
 
-  this.afService.getUser(this.username, this.groupname);//binds to firebase groups,
-  //console.log(this.groupname)
-  //which is updated in the group service, when the socket is emitted to the server
+  this.afService.getUser(this.username, this.groupname);
+  //Downloads totals (what's been paid so far) from firebase, only once; when coming back to the page
   if(this.receiptExists() != undefined){
-    let loadfirebase = this.afService.getUsers(this.groupname).subscribe(
+
+    let loadfirebase = this.afService.getOldAmounts(this.groupname).subscribe(
       (data)=>{
         for(let i = 0; i < data.length; i++){
-          let userInfo = new UserAmount(data[i].userAmount,data[i].username, data[i].groupname);
+          let userInfo = new UserAmount(data[i].userAmount, data[i].username, data[i].groupname);
+            if(this.username == data[i].username){//Get the previous amount fo this user and put into var
+              this.oldAmount = data[i].userAmount;
+            }
             this.allUsers.push(userInfo);
         }
-        //this.allUsers = allUsers;
-        //console.log(this.allUsers)
         this.updateView();
         loadfirebase.unsubscribe()
       }
   );
+  this.conn3 = this.afService.checkifInGroup(this.groupname)
+  .subscribe((data)=>{
+    if(data.groupmembers!= undefined){
+     for( let i = 0; i < data.groupmembers.length; i++){
+       this.groupmembers = data.groupmembers.slice();
+     }
+     if(this.groupmembers.indexOf(this.username) === -1){
+         this.groupmembers.push(this.username)
+     }
+      this.afService.updateGroupmembers(this.groupname, this.groupmembers)
+      .then((data)=>{
+        //console.log(this.groupmembers)
+      })
+    }
+  })
 }
+//Subscribes to get user info as it updates and push to array
   this.conn = this.groupService.getItems().subscribe((data) => {
       this.currBillAmount  = this.totalBillAmount;
       this.userAmountTotal = 0;
       this.data = data;
       this.userAmount = parseInt(this.data.userAmount);
+
   let userInfo = new UserAmount(this.data.userAmount,this.data.username, this.data.groupname)
   let found = this.userExists(this.data.username, this.allUsers);
   if(found){
@@ -168,7 +171,7 @@ private updateView(){
 }
 
 private receiptExists(){
-    return this.afService.getUsers(this.groupname)//Get all users
+    return this.afService.getOldAmounts(this.groupname)//Get all users
 }
 
 private userExists(username, arr) {
@@ -193,6 +196,7 @@ private addItemFields(){
 }
 
 private calculateItems(){
+  console.log(this.oldAmount)
     this.userAmount = this.userAmount || 0;
     let fArray: FormArray = <FormArray>this.groupForm.get('items');
     const len = fArray.length;
@@ -202,17 +206,20 @@ private calculateItems(){
     for(let i =0; i < len; i++ ){
       this.userAmount += +itemAmount[i];
     }
-    this.groupService.upDateItems(this.totalBillAmount, this.groupname, this.userAmount, this.username);
+
+    this.groupService.upDateItems(this.totalBillAmount, this.groupname, this.userAmount + this.oldAmount, this.username);
 }
 
 private setUserComlpeted(){
   this.groupForm.get('items').disable();
+  this.feedbackService.alertUser( "Completing Receipt", "The Administrator is setting this group receipt to completed<br /> All editing will stop", "OK" ,this.navCtrl.popToRoot())
 }
 private onCompleted(){
     this.completed = true;
     this.groupForm.get('items').disable();
     this.afService.setGroupComplete(this.groupname, this.completed);
     this.groupService.disconnectUsers(this.groupname);
+
 }
 public deleteReceipt(){
   this.afService.deleteReceipt(this.groupname);
@@ -222,7 +229,9 @@ ngOnDestroy(){
 this.connections.push(this.conn, this.conn2, this.conn3);
 console.log(this.connections)
 this.connections.forEach((conn)=>{
+  if(conn!=undefined){
     conn.unsubscribe();
+  }
 })
 
 

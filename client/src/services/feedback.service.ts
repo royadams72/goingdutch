@@ -11,7 +11,22 @@ export class FeedbackService {
               private alertCtrl: AlertController) {
 
    }
+   public alertUser(title:string, message:string, btnText, url:any){
+     let alert = this.alertCtrl.create({
+       title: title,
+       message: message,
+       buttons:[ {
+           text: btnText,
+             handler: (data) => {
+               //console.log(data.groupname, groupname)
+                     alert.dismiss().then(() => {url});
 
+             }
+           }
+         ]
+     });
+     alert.present();
+   }
    public startLoader(message:string){
     this.loading = this.loadingCtrl.create({
        content: message

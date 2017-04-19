@@ -53,69 +53,53 @@ constructor(private navParams: NavParams,
     }
 
 private fetchGroups(){
-
+this.groups = []
   if(!this.completed){
     //USER LOGIC
       //If not completed; get this users coords
 
-  Geolocation.getCurrentPosition()
-    .then((location) => {
-          let userAddress: GeoCoord = {
-            latitude: location.coords.latitude,
-            longitude: location.coords.longitude
-            };
-           //Get groups from firebase and match coords using Haversine formular
-            this.connection = this.afService.getGroups(this.completed, this.username)
-            .subscribe((firebaseData) => {
-              this.groups = []
+      Geolocation.getCurrentPosition()
+        .then((location) => {
+              let userAddress: GeoCoord = {
+                latitude: location.coords.latitude,
+                longitude: location.coords.longitude
+                };
+               //Get groups from firebase and match coords using Haversine formular
+                this.connection = this.afService.getGroups(this.completed, this.username)
+                .subscribe((firebaseData) => {
+
               firebaseData.map((groupData)=>{
               //  console.log(groupData.groupcode)
-                let groupAddress: GeoCoord = {
-                    latitude: groupData.address.latitude,
-                    longitude: groupData.address.longitude
-                    };
-                let distanceInMeters = this.hsService.getDistanceInMeters(userAddress, groupAddress);
+                  let groupAddress: GeoCoord = {
+                      latitude: groupData.address.latitude,
+                      longitude: groupData.address.longitude
+                      };
+                  let distanceInMeters = this.hsService.getDistanceInMeters(userAddress, groupAddress);
 
-                    if(distanceInMeters < 10){
-                      //console.log(groupData.groupmembers);
-                      this.handleGroupInfo(groupData);
+                      if(distanceInMeters < 10){
+                        //console.log(groupData.groupmembers);
+                        let groupcode
+                          if(this.username == groupData.admin || groupData.groupmembers.indexOf(this.username) != -1){
+                            groupcode = 0
+                            console.log("found")
+                          }else{
+                            groupcode =  groupData.groupcode;
+                          }
+                          let groupInfo = new Group(groupData.groupname, groupData.admin, groupData.totalBillAmount, groupData.address, groupData.completed, groupcode, groupData.groupmembers);
+                        //  console.log(groupInfo.groupcode)
+                          this.groups.push(groupInfo);
+                      }
 
-                    }
+                  })
 
-            })
-
-          this.loaded = true;
-          this.loading.dismiss();
-         })
-    }).catch((error) => {
-return this.FeedbackService.showError(error.message);
-});
-    }else if(this.completed){
-      this.connection = this.afService.getGroups(this.completed, this.username)
-      .subscribe((firebaseData) => {
-        this.groups = []
-        firebaseData.map((groupData)=>{
-                  this.handleGroupInfo(groupData);
-            })
-
-
-      this.loaded = true;
-      this.loading.dismiss();
-     })
+                this.loaded = true;
+                this.loading.dismiss();
+               })
+          }).catch((error) => {
+      return this.FeedbackService.showError(error.message);
+      });
     }
 }
-private handleGroupInfo(groupData){
-  let groupcode
-    if(this.username == groupData.admin || groupData.groupmembers.indexOf(this.username) != -1){
-      groupcode = 0
-      console.log("found")
-      }else{
-      groupcode =  groupData.groupcode;
-    }
-let groupInfo = new Group(groupData.groupname, groupData.admin, groupData.totalBillAmount, groupData.address, groupData.completed, groupcode, groupData.groupmembers);
-    this.groups.push(groupInfo);
-}
-
 
 private joinGroup(totalBillAmount, groupname, completed, groupcode, admin){
 //console.log(totalBillAmount, groupname, completed, groupcode, admin)
