@@ -30,7 +30,7 @@ export class UserPage {
   private isRejoiningUser:any;
   private userType:string;
   private groupcode:number;
-
+    d:number
 constructor(private navParams: NavParams,
             private navCtrl: NavController,
             private afService:AfService,
@@ -75,9 +75,9 @@ private fetchGroups(){
                     longitude: groupData.address.longitude
                     };
                 let distanceInMeters = this.hsService.getDistanceInMeters(userAddress, groupAddress);
-
+                  this.d = distanceInMeters
                     if(distanceInMeters < 10){
-                      //console.log(groupData.groupmembers);
+                     console.log(this.d);
                       this.handleGroupInfo(groupData);
 
                     }

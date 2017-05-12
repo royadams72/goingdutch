@@ -14,15 +14,13 @@ export class AdminPage implements OnInit {
 
   setGroup(f:NgForm){
     let form = f.value
-    if(form.groupcode.length == 4){
-      this.errorTxt = ""
-      this.navCtrl.push(GroupPage, {totalBillAmount: form.totalBillAmount, groupname:form.groupname, groupcode:form.groupcode, completed: false, userType: "admin", action: "create_group"});
-      f.reset();
-    }else{
-      this.errorTxt = "There needs to be four (4) numbers"
-    }
-    //console.log(form.value.groupcode.length)
-    //  form.reset();
-
+        if(form.groupcode.length == 4){
+          this.errorTxt = ""
+          this.navCtrl.push(GroupPage, {totalBillAmount: form.totalBillAmount, groupname:form.groupname, groupcode:form.groupcode, completed: false, userType: "admin", action: "create_group"});
+          f.reset();
+        }else{
+          this.errorTxt = "There needs to be four (4) numbers"
+        }
+  
   }
 }

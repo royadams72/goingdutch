@@ -1,9 +1,10 @@
 {
-  "name": "Going Dutch",
+  "name": "going_dutch",
   "version": "1.0.0",
   "description": "Realtime way of group calculating thier part of a bill",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Roy Adams - Eden Grafix",

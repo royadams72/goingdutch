@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Group } from '../models/group.model';
 import { UserAmount } from '../models/userAmount.model';
-import { HaversineService, GeoCoord} from "ng2-haversine";
+//import { HaversineService, GeoCoord} from "ng2-haversine";
 @Injectable()
 export class AfService {
     private  groups:FirebaseListObservable<Group[]>;

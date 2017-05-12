@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import * as io from 'socket.io-client';
 import { AlertController} from 'ionic-angular';
 import { Group } from '../models/group.model';
+import { StartPage  } from '../pages/start/start';
 
 @Injectable()
 export class UserService {
@@ -13,7 +14,7 @@ export class UserService {
     if (localStorage.getItem('nickname')==null){
         this.setUserName();
       }else{
-        return true;
+        return false;
     }
      console.log(localStorage.getItem('nickname'))
 }
@@ -32,13 +33,14 @@ export class UserService {
         {
           text: 'Use this',
           handler: (data) => {
-            if(data.nickname.trim() =='' || data.nickname == null){
-              return;
-            }
-            console.log(data.nickname)
-            localStorage.setItem('nickname', data.nickname);
+              if(data.nickname.trim() =='' || data.nickname == null){
 
-          }
+                return;
+              }
+              console.log(data.nickname)
+              localStorage.setItem('nickname', data.nickname);
+            }
+
         }
       ]
   });

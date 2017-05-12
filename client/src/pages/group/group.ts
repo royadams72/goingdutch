@@ -39,6 +39,8 @@ export class GroupPage implements OnInit {
   private groupmembers:Array<any> = [];
   private action:string;
   private oldAmount:number = 0;
+  private groupCount:number;
+  private isNegative:boolean = false;
   //private isRejoining:boolean = false;
   constructor(private navParams: NavParams,
               private afService:AfService,
@@ -57,7 +59,7 @@ export class GroupPage implements OnInit {
      this.lm = "Please wait..";
      this.action = navParams.get('action');
 
-
+     console.log(this.isNegative)
 
    }
 
@@ -99,9 +101,6 @@ ngOnInit() {
         this.loaded = true;
         this.initForm();
   }
-
-
-
 this.loadReceipt();
 
 }
@@ -116,14 +115,15 @@ loadReceipt(){
         for(let i = 0; i < data.length; i++){
           let userInfo = new UserAmount(data[i].userAmount, data[i].username, data[i].groupname);
             if(this.username == data[i].username){//Get the previous amount fo this user and put into var
-              this.oldAmount = data[i].userAmount;
+              this.oldAmount = data[i].userAmount;//This will make sure that the amount in the db is added to rather than overwritten
             }
-            this.allUsers.push(userInfo);
+            this.allUsers.push(userInfo);//Push all od amounts to array and udate the view
         }
         this.updateView();
         loadfirebase.unsubscribe()
       }
   );
+  //This pushed the username to the group array and updates the groupmembers field held in the groups db
   this.conn3 = this.afService.checkifInGroup(this.groupname)
   .subscribe((data)=>{
     if(data.groupmembers!= undefined){
@@ -135,18 +135,17 @@ loadReceipt(){
      }
       this.afService.updateGroupmembers(this.groupname, this.groupmembers)
       .then((data)=>{
+      //  this.groupCount++;
         //console.log(this.groupmembers)
       })
     }
   })
 }
-//Subscribes to get user info as it updates and push to array
+//Subscribe to get user info as it updates and push to array
   this.conn = this.groupService.getItems().subscribe((data) => {
-      this.currBillAmount  = this.totalBillAmount;
+      this.currBillAmount = this.totalBillAmount;
       this.userAmountTotal = 0;
       this.data = data;
-      this.userAmount = parseInt(this.data.userAmount);
-
   let userInfo = new UserAmount(this.data.userAmount,this.data.username, this.data.groupname)
   let found = this.userExists(this.data.username, this.allUsers);
   if(found){
@@ -166,12 +165,17 @@ private updateView(){
   this.groupService.update(this.allUsers);
     for(let i = 0; i < this.allUsers.length; i++){
          this.userAmountTotal = this.userAmountTotal + parseInt(this.allUsers[i].userAmount);
+         if(this.allUsers[i].username === this.username){
+           this.userAmount = parseInt(this.allUsers[i].userAmount);
+
+         }
       }
       this.currBillAmount  = (this.currBillAmount) - this.userAmountTotal;
+      if(this.currBillAmount < 0){this.isNegative = true}else{this.isNegative = false}
 }
 
 private receiptExists(){
-    return this.afService.getOldAmounts(this.groupname)//Get all users
+    return this.afService.getOldAmounts(this.groupname)//Get all user amounts from db
 }
 
 private userExists(username, arr) {
@@ -196,7 +200,7 @@ private addItemFields(){
 }
 
 private calculateItems(){
-  console.log(this.oldAmount)
+
     this.userAmount = this.userAmount || 0;
     let fArray: FormArray = <FormArray>this.groupForm.get('items');
     const len = fArray.length;
@@ -206,7 +210,7 @@ private calculateItems(){
     for(let i =0; i < len; i++ ){
       this.userAmount += +itemAmount[i];
     }
-
+//Put oldAmount into sent function, oldAmount is instatiated as 0, so is ok if not used
     this.groupService.upDateItems(this.totalBillAmount, this.groupname, this.userAmount + this.oldAmount, this.username);
 }
 
@@ -227,7 +231,6 @@ public deleteReceipt(){
 }
 ngOnDestroy(){
 this.connections.push(this.conn, this.conn2, this.conn3);
-console.log(this.connections)
 this.connections.forEach((conn)=>{
   if(conn!=undefined){
     conn.unsubscribe();

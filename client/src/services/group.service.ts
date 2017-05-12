@@ -9,7 +9,7 @@ import { UserAmount } from '../models/userAmount.model';
 @Injectable()
 export class GroupService {
   private socket: any;
-  private url = 'http://192.168.0.4:3000';
+  private url = 'https://going-dutch.herokuapp.com';
   updateArr = new BehaviorSubject<Array<any>>([]);
 
 constructor(private _af:AngularFire,

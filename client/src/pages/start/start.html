@@ -1,17 +1,17 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar class="nav">
 
     <ion-title text-center>Going Dutch</ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding text-center>
-  <h2>Choose your action</h2>
+  <h1>Choose your action</h1>
 
-<button ion-button type="button" (click)="onAction('createGroup')" block margin-top>Create Group</button>
+<button ion-button type="button" (click)="onAction('createGroup')" block margin-top [round]="true" [large]="true" icon-left><ion-icon name="create"></ion-icon>Create Group</button>
 
-<button ion-button type="button" (click)="onAction('joinGroup')" block margin-top>Join Group</button>
+<button ion-button type="button" (click)="onAction('joinGroup')" block margin-top [round]="true" [large]="true" icon-left><ion-icon name="people"></ion-icon>Join Group</button>
 
-<button ion-button type="button" (click)="onAction('prevGroups')" block margin-top>Previous Groups</button>
+<button ion-button type="button" (click)="onAction('prevGroups')" block margin-top [round]="true" [large]="true" icon-left><ion-icon name="redo"></ion-icon>Previous Groups</button>
 
 </ion-content>

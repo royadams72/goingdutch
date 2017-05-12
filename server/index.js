@@ -1,8 +1,10 @@
 var io = require('socket.io'),
     http = require('http'),
-    server = http.createServer(),
+    server = http.createServer();
+    io(server, 'origins', 'https://going-dutch.herokuapp.com:* http://localhost:*');
+    io({transports: [ 'websocket', 'xhr-polling']});
     io = io.listen(server);
-
+var port = process.env.PORT || 3000; // Use the port that Heroku provides or default to 3000
     io.sockets.on('connection', function(socket){
       //socket.join('groupname');
       console.log('User connected');
@@ -35,6 +37,7 @@ var io = require('socket.io'),
       io.sockets.in(groupname).emit('receipt-updated', {type: 'receipt-updated', totalBillAmount: totalBillAmount, groupname: groupname, userAmount: userAmount, username: username});
       })
     });
-    server.listen(3000, function(){
+
+    server.listen(port, function(){
       console.log('Server started');
     })

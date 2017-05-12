@@ -1,13 +1,13 @@
 <ion-header>
   <ion-navbar>
-    <ion-title text-center>
+    <ion-title class="padLeft">
       Administrator
     </ion-title>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding text-center>
-  <h2>Choose your action</h2>
+  <h1>Create your group</h1>
    <form (ngSubmit)="setGroup(f)"  #f="ngForm">
 <ion-list>
   <ion-item>
@@ -18,7 +18,7 @@
     <ion-label floating>Group Name</ion-label>
     <ion-input type="text" name="groupname" ngModel required></ion-input>
   </ion-item>
-  <p>
+  <p text-left padding-left>
     Enter a four(4) digit code, to give to members of the group (Numbers only)
   </p>
   <ion-item>
@@ -27,7 +27,7 @@
 
     <ion-input type="number" name="groupcode" ngModel  maxlength="4" minlength="4" required></ion-input>
   </ion-item>
-  <button ion-button type="submit" block margin-top>Start Group</button>
+  <button ion-button type="submit" block margin-top [round]="true">Start Group</button>
 </ion-list>
 <p>
   {{errorTxt}}
