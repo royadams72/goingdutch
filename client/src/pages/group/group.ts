@@ -8,8 +8,8 @@ import { FeedbackService } from '../../services/feedback.service';
 import { UserAmount } from '../../models/userAmount.model';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Group } from '../../models/group.model'
-import { Geolocation } from 'ionic-native';
-import { Location } from '../../models/location.model';
+
+
 //import rg from 'simple-reverse-geocoder';
 import  'rxjs/Rx'
 @Component({
@@ -21,6 +21,7 @@ export class GroupPage implements OnInit {
   private conn: any;
   private conn2: any;
   private conn3: any;
+  private conn4: any;
   private connections:Array<any> = [];
   private totalBillAmount: number;
   private currBillAmount: number;
@@ -81,21 +82,16 @@ ngOnInit() {
       this.initForm();
     }else if (this.userType == 'admin' && this.action == "create_group"){
       this.feedbackService.startLoader("Creating Group, please wait...");
-      Geolocation.getCurrentPosition()
-          .then((location) => {
-          //When creating a group
-            let address:Location = new Location(location.coords.latitude, location.coords.longitude);
-                console.log("fired")
-                  this.group = new Group(this.groupname, this.username,this.totalBillAmount, address, false, this.groupcode, [this.username]);
-                  this.afService.setGroup(this.group, this.groupname);
-                  this.groupService.joinGroup(this.groupname);
-                  this.loaded = true;
-                  this.initForm();
-                  this.feedbackService.stopLoader();
-              }//End Location
-          ).catch((error) => {
-          console.log('Error getting location', error);
-        });
+      this.conn4 = this.groupService.createGroup(this.groupname, this.username, this.totalBillAmount, this.groupcode)
+      .then((group)=>{
+        if(group){
+          console.log(group)
+          this.loaded = true;
+          this.initForm();
+          this.feedbackService.stopLoader();
+        }
+      })
+
   }else if (this.userType == 'admin'){
         this.groupService.joinGroup(this.groupname);
         this.loaded = true;
@@ -143,6 +139,7 @@ loadReceipt(){
 }
 //Subscribe to get user info as it updates and push to array
   this.conn = this.groupService.getItems().subscribe((data) => {
+    console.log(data)
       this.currBillAmount = this.totalBillAmount;
       this.userAmountTotal = 0;
       this.data = data;
@@ -230,7 +227,7 @@ public deleteReceipt(){
   this.navCtrl.popToRoot();
 }
 ngOnDestroy(){
-this.connections.push(this.conn, this.conn2, this.conn3);
+this.connections.push(this.conn, this.conn2, this.conn3, this.conn4);
 this.connections.forEach((conn)=>{
   if(conn!=undefined){
     conn.unsubscribe();

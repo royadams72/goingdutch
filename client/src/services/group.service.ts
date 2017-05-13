@@ -6,6 +6,8 @@ import { Group } from '../models/group.model';
 import { Observable } from 'rxjs/Observable';
 import { AfService } from '../services/af.service';
 import { UserAmount } from '../models/userAmount.model';
+import { Geolocation } from 'ionic-native';
+import { Location } from '../models/location.model';
 @Injectable()
 export class GroupService {
   private socket: any;
@@ -57,10 +59,29 @@ update(arr: Array<any>){
   this.updateArr.next(arr);
 }
 
+
 public  joinGroup(groupname){
     this.socket.connect();
     this.socket.emit('group', groupname);
   //  console.log(groupname)
   }
+
+public createGroup(groupname, username, totalBillAmount, groupcode){
+  return Geolocation.getCurrentPosition()
+      .then((location) => {
+      //When creating a group
+        let address:Location = new Location(location.coords.latitude, location.coords.longitude);
+            //creates group with Geolocation, so can match other users to this
+            //Ada to a firebase database and joins/creates the socket.io group
+            let group = new Group(groupname, username, totalBillAmount, address, false, groupcode, [username]);
+              this.afService.setGroup(group, groupname);
+              this.joinGroup(groupname);
+              return group;
+          }//End Location
+      ).catch((error) => {
+      console.log('Error getting location', error);
+    });
+
+}
 
 }
