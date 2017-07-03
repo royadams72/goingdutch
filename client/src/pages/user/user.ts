@@ -7,6 +7,7 @@ import { UserService } from '../../services/user.service';
 import { Group } from '../../models/group.model';
 import { FeedbackService } from '../../services/feedback.service';
 import { GroupPage } from '../group/group';
+import { GeoService } from '../../services/geo.service';
 import { Geolocation } from 'ionic-native';
 import { HaversineService, GeoCoord} from "ng2-haversine";
 //import rg from 'simple-reverse-geocoder';
@@ -38,7 +39,8 @@ constructor(private navParams: NavParams,
             private alertCtrl: AlertController,
             private FeedbackService: FeedbackService,
             private hsService: HaversineService,
-            private userService: UserService) {
+            private userService: UserService,
+            private geoService : GeoService) {
 
 
  }
@@ -49,10 +51,14 @@ constructor(private navParams: NavParams,
     this.fetchGroups();
     this.loaded = false;
     this.loader();
+
   //console.log(this.username)
     }
 
 private fetchGroups(){
+
+
+
 
   if(!this.completed){
     //USER LOGIC
@@ -60,6 +66,7 @@ private fetchGroups(){
 
   Geolocation.getCurrentPosition()
     .then((location) => {
+        this.geoService.getGeoLocation(location, this.completed, this.username);
           let userAddress: GeoCoord = {
             latitude: location.coords.latitude,
             longitude: location.coords.longitude
@@ -77,7 +84,7 @@ private fetchGroups(){
                 let distanceInMeters = this.hsService.getDistanceInMeters(userAddress, groupAddress);
                   this.d = distanceInMeters
                     if(distanceInMeters < 10){
-                     console.log(this.d);
+                    // console.log(this.d);
                       this.handleGroupInfo(groupData);
 
                     }
@@ -108,7 +115,7 @@ private handleGroupInfo(groupData){
   let groupcode
     if(this.username == groupData.admin || groupData.groupmembers.indexOf(this.username) != -1){
       groupcode = 0
-      console.log("found")
+    //  console.log("found")
       }else{
       groupcode =  groupData.groupcode;
     }
@@ -130,11 +137,9 @@ private joinGroup(totalBillAmount, groupname, completed, groupcode, admin){
   let titleTxt: string = 'Please enter the 4 digit pass code provided by the group creator';
   if(groupcode == 0){
       //this.navCtrl.pop();
-        this.navCtrl.push(GroupPage, {totalBillAmount: totalBillAmount, groupname:groupname, completed: completed, userType: this.userType, groupcode:groupcode});
-
-        return;
+      this.navCtrl.push(GroupPage, {totalBillAmount: totalBillAmount, groupname:groupname, completed: completed, userType: this.userType, groupcode:groupcode});
+      return;
   }
-
 
         let alert = this.alertCtrl.create({
           title: titleTxt,
@@ -174,12 +179,10 @@ private loader(){
 
   ionViewDidLeave(){
   //  console.log('left')
-
   this.connection.unsubscribe();
-  for(let i = 0; i < this.connections.length; i++){
-    this.connections[i].unsubscribe();
-    //  console.log(this.connections[i])
-  }
-
+    for(let i = 0; i < this.connections.length; i++){
+      this.connections[i].unsubscribe();
+      //  console.log(this.connections[i])
+    }
   }
 }

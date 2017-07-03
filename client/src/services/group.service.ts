@@ -12,6 +12,7 @@ import { Location } from '../models/location.model';
 export class GroupService {
   private socket: any;
   private url = 'https://going-dutch.herokuapp.com';
+  private allUsers: UserAmount[] = [];
   updateArr = new BehaviorSubject<Array<any>>([]);
 
 constructor(private _af:AngularFire,
@@ -19,6 +20,22 @@ constructor(private _af:AngularFire,
             this.socket = io(this.url);
 
  }
+
+public getOldAmounts(oldAmount,username, groupname){
+  return  this.afService.getOldAmounts(groupname).map(
+    (data)=>{
+      for(let i = 0; i < data.length; i++){
+        let userInfo = new UserAmount(data[i].userAmount, data[i].username, data[i].groupname);
+          if(username == data[i].username){//Get the previous amount fo this user and put into var
+            oldAmount = data[i].userAmount;//This will make sure that the amount in the db is added to rather than overwritten
+          }
+          this.allUsers.push(userInfo);//Push all  amounts to array and update the view
+      }
+      return this.allUsers;
+    }
+);
+
+}
 
   upDateItems(totalBillAmount,groupname, userAmount, username){
     let userInfo = new UserAmount(userAmount, username, groupname)

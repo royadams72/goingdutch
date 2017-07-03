@@ -18,6 +18,7 @@ import { AfService } from '../services/af.service';
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import { AngularFireModule, AuthMethods, AuthProviders } from 'angularfire2';
 import { GroupService } from '../services/group.service';
+import { GeoService } from '../services/geo.service';
 import { HaversineService } from "ng2-haversine";
 
 const afConfig = {
@@ -45,7 +46,6 @@ const afAuthConfig = {
       apiKey:'AIzaSyBzC65IojRmZa8QArAXB0UsFFEf3HRnXc0'
     }),
     AngularFireModule.initializeApp(afConfig, afAuthConfig)
-
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -64,7 +64,8 @@ const afAuthConfig = {
     AfService,
     GroupService,
     FeedbackService,
-    HaversineService
+    HaversineService,
+    GeoService
   ]
 })
 export class AppModule {}

@@ -8,8 +8,6 @@ import { FeedbackService } from '../../services/feedback.service';
 import { UserAmount } from '../../models/userAmount.model';
 import { FormGroup, FormControl, Validators, FormArray } from '@angular/forms';
 import { Group } from '../../models/group.model'
-
-
 //import rg from 'simple-reverse-geocoder';
 import  'rxjs/Rx'
 @Component({
@@ -60,19 +58,19 @@ export class GroupPage implements OnInit {
      this.lm = "Please wait..";
      this.action = navParams.get('action');
 
-     console.log(this.isNegative)
+    // console.log(this.isNegative)
 
    }
 
 ngOnInit() {
 
-   console.log(this.userType, this.action)
+  // console.log(this.userType, this.action)
     this.loaded = false;
     //
     if(this.userType==='user'){
         this.groupService.joinGroup(this.groupname);
         this.loaded = true;
-      this.conn2 = this.groupService.checkIfComplete().subscribe((data)=>{
+        this.conn2 = this.groupService.checkIfComplete().subscribe((data)=>{
           if(data){
             this.completed = true;
             this.setUserComlpeted()
@@ -105,19 +103,15 @@ loadReceipt(){
   this.afService.getUser(this.username, this.groupname);
   //Downloads totals (what's been paid so far) from firebase, only once; when coming back to the page
   if(this.receiptExists() != undefined){
-
-    let loadfirebase = this.afService.getOldAmounts(this.groupname).subscribe(
-      (data)=>{
-        for(let i = 0; i < data.length; i++){
-          let userInfo = new UserAmount(data[i].userAmount, data[i].username, data[i].groupname);
-            if(this.username == data[i].username){//Get the previous amount fo this user and put into var
-              this.oldAmount = data[i].userAmount;//This will make sure that the amount in the db is added to rather than overwritten
-            }
-            this.allUsers.push(userInfo);//Push all od amounts to array and udate the view
-        }
+    let loadOldAmounts = this.groupService.getOldAmounts(this.oldAmount, this.username,this.groupname)
+    .subscribe(
+      (allUsers)=>{
+        if (allUsers){
+        this.allUsers = allUsers;
         this.updateView();
-        loadfirebase.unsubscribe()
+        loadOldAmounts.unsubscribe()
       }
+    }
   );
   //This pushed the username to the group array and updates the groupmembers field held in the groups db
   this.conn3 = this.afService.checkifInGroup(this.groupname)

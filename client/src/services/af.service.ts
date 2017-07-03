@@ -38,7 +38,7 @@ getOldAmounts(groupname:string){
 }
   public getUser(username:string, groupname:string){
     let user = this._af.database.object('/userTotals/'+groupname+"/"+username) as FirebaseObjectObservable<any>
-    console.log(user)
+  //  console.log(user)
     return user;
   }
 
