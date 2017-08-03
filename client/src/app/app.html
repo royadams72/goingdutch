@@ -2,21 +2,17 @@
 <ion-menu [content]="nav"  persistent="true"><!--Name nav to bind this menu to-->
   <ion-header>
     <ion-toolbar>
-      <ion-title text-center>Overview</ion-title>
-
+      <ion-title text-center>Group Members</ion-title>
     </ion-toolbar>
-</ion-header>
-<ion-content padding>
+  </ion-header>
+  <ion-content padding>
       <ion-list>
         <button ion-item menuClose icon-right>CLOSE LIST</button>
-         <ion-grid>
-           <ion-row  *ngFor="let user of allUsers; let index=index; let even=even;" [ngClass]="{ even: even }">
-             <ion-col text-left>{{user.username}}</ion-col>
-             <ion-col text-right>£{{user.userAmount}}</ion-col>
-           </ion-row>
-         </ion-grid>
-    </ion-list>
-</ion-content>
-
+        <button ion-item menuClose *ngFor="let user of allUsers; let index=index; let even=even;" [ngClass]="{ even: even }" (click)="showUserInfo(user.groupname, user.username)">
+             {{user.username}}
+            £{{user.userAmount}}
+        </button>
+       </ion-list>
+  </ion-content>
 </ion-menu><!--End slide out menu-->
 <ion-nav [root]="rootPage" #nav></ion-nav>

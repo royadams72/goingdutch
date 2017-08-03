@@ -18,7 +18,7 @@ export class AdminService {
 
 
   constructor(private http: Http) {
-    this.socket = io(this.url);
+    // this.socket = io(this.url);
    }
 
   getUserName(){

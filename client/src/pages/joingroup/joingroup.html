@@ -1,0 +1,30 @@
+<ion-header>
+  <ion-navbar hideBackButton="true">
+
+    <ion-title text-center>
+      Going Dutch
+    </ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding text-center>
+  <h1 *ngIf="!completed">Join Group</h1>
+  <h1 *ngIf="completed">Previous Group</h1>
+  <ion-list *ngIf="groups.length > 0">
+  <button class="button-inner" *ngFor="let group of groups"
+            ion-button type="button"
+            (click)="joinGroup(group.groupname, group.groupcode, group.admin, group.totalBillAmount)"
+            block margin-top [round]="true" [large]="true">
+            {{ group.groupname }}, £{{group.totalBillAmount}}
+            </button>
+
+</ion-list>
+
+<button class="button-inner" *ngIf="groups.length === 0 && !completed && loaded"
+          ion-button type="button"
+          (click)="createGroup()"
+          block margin-top [round]="true" [large]="true">
+          <p class="" style="width:inherit">No Groups nearby, click to create one</p>
+          </button>
+<h3 *ngIf="groups.length === 0 && completed && loaded">No previous Groups</h3>
+</ion-content>

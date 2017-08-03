@@ -42,6 +42,11 @@ $toolbar-background: #00B0FF;
 //For alternate rows in overview list
 .even { background-color: #47C6FF; color: #fff; }
 .danger {color: #f53d3d !important}
+ion-label {color: #8a8686}
+.tab-button {padding-bottom: 10px!important}
+.button-inner {
+  flex-flow: column;
+}
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here

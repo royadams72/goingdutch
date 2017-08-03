@@ -1,11 +1,14 @@
 import { NgModule, ErrorHandler } from '@angular/core';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { MyApp } from './app.component';
+import { ReceiptComponent } from './component/receipt_display/receipt.component';
+import { GroupFormComponent } from './component/groupform/groupform.component';
 
-import { AdminPage } from '../pages/admin/admin';
-import { UserPage } from '../pages/user/user';
-import { StartPage } from '../pages/start/start';
+import { GroupAdminPage } from '../pages/groupadmin/groupadmin';
+import { JoinGroupPage } from '../pages/joingroup/joingroup';
 import { GroupPage } from '../pages/group/group';
+import { UserdetailsPage } from '../pages/userdetails/userdetails';
+import { TabsPage } from '../pages/tabs/tabs';
 
 import { StatusBar } from '@ionic-native/status-bar';
 import { SplashScreen } from '@ionic-native/splash-screen';
@@ -18,7 +21,6 @@ import { AfService } from '../services/af.service';
 import { AgmCoreModule } from 'angular2-google-maps/core';
 import { AngularFireModule, AuthMethods, AuthProviders } from 'angularfire2';
 import { GroupService } from '../services/group.service';
-import { GeoService } from '../services/geo.service';
 import { HaversineService } from "ng2-haversine";
 
 const afConfig = {
@@ -35,10 +37,13 @@ const afAuthConfig = {
 @NgModule({
   declarations: [
     MyApp,
-    StartPage,
-    AdminPage,
+    GroupAdminPage,
     GroupPage,
-    UserPage
+    JoinGroupPage,
+    UserdetailsPage,
+    TabsPage,
+    ReceiptComponent,
+    GroupFormComponent
   ],
   imports: [
     IonicModule.forRoot(MyApp),
@@ -50,10 +55,11 @@ const afAuthConfig = {
   bootstrap: [IonicApp],
   entryComponents: [
     MyApp,
-    StartPage,
-    AdminPage,
+    GroupAdminPage,
     GroupPage,
-    UserPage
+    JoinGroupPage,
+    UserdetailsPage,
+    TabsPage
   ],
   providers: [
     StatusBar,
@@ -64,8 +70,7 @@ const afAuthConfig = {
     AfService,
     GroupService,
     FeedbackService,
-    HaversineService,
-    GeoService
+    HaversineService
   ]
 })
 export class AppModule {}

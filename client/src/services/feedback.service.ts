@@ -11,7 +11,7 @@ export class FeedbackService {
               private alertCtrl: AlertController) {
 
    }
-   public alertUser(title:string, message:string, btnText, url:any){
+   public alertUser(title:string, message:string, btnText:string, url?:any){
      let alert = this.alertCtrl.create({
        title: title,
        message: message,
@@ -19,7 +19,11 @@ export class FeedbackService {
            text: btnText,
              handler: (data) => {
                //console.log(data.groupname, groupname)
-                     alert.dismiss().then(() => {url});
+                     alert.dismiss().then(() => {
+                       if(url){
+                             url;
+                           }
+                     });
 
              }
            }
@@ -27,6 +31,8 @@ export class FeedbackService {
      });
      alert.present();
    }
+
+
    public startLoader(message:string){
     this.loading = this.loadingCtrl.create({
        content: message

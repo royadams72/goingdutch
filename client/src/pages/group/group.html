@@ -1,31 +1,20 @@
 <ion-header>
-  <ion-navbar>
+  <ion-navbar hideBackButton="true">
 
     <ion-title text-center>
       Group: {{ groupname }}
     </ion-title>
     <button ion-button menuToggle right>
-      <ion-icon name="list-box"></ion-icon>
+      <ion-icon name="people"></ion-icon>
     </button>
   </ion-navbar>
 </ion-header>
 
 <ion-content padding text-center>
   <h1>Enter Amount(s)</h1>
-  <h4>Left to pay: <span [ngClass]="{'danger': isNegative }">£{{ currBillAmount }}</span></h4>
-  <h4 *ngIf="userAmount">Your payment: £{{ userAmount }}</h4>
-  <form *ngIf="loaded" [formGroup]="groupForm">
+  <app-receiptdisplay [dataObj]="initTotals"></app-receiptdisplay>
+  <app-groupform [formDataObj]="loadForm"></app-groupform>
 
-   <ion-list formArrayName="items">
-       <ion-item  *ngFor="let item of groupForm.get('items').controls; let i = index">
-         <ion-label floating>Amount</ion-label>
-         <ion-input type="number" [formControlName]='i' (keyup)="calculateItems()"></ion-input>
-      </ion-item>
-   </ion-list>
- <button *ngIf="!completed" ion-button block type="button" (click)="addItemFields()" [round]="true">Add More Items</button>
-  <button *ngIf="completed && userType=='admin'" ion-button block type="button" (click)="deleteReceipt()" [round]="true">Delete Receipt</button>
-<button *ngIf="!completed && userType=='admin'" ion-button block type="button" (click)="onCompleted()" margin-top [round]="true">Mark as complete and save</button>
- </form>
 
 
 </ion-content>

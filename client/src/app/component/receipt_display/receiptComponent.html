@@ -1,0 +1,3 @@
+
+<h4>Left to pay: <span [ngClass]="{'danger': isNegative }">£{{ billRemaining }}</span></h4>
+<h4 *ngIf="userAmount">{{ username }} current amount: £{{ userAmount }}</h4>

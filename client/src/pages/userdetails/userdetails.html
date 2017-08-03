@@ -1,0 +1,16 @@
+
+<ion-header>
+  <ion-navbar>
+    <ion-title>{{username}}&#39;s Details</ion-title>
+  </ion-navbar>
+</ion-header>
+<ion-content padding text-center>
+  <h1>{{username}}</h1>
+  <app-receiptdisplay [dataObj]="initTotals"></app-receiptdisplay>
+  <ion-grid>
+    <ion-row *ngFor="let userDetail of userDetails; let even=even;" [ngClass]="{ even: even }">
+      <ion-col>{{userDetail.item}}</ion-col>
+      <ion-col>{{userDetail.itemAmount}}</ion-col>
+    </ion-row>
+  </ion-grid>
+</ion-content>

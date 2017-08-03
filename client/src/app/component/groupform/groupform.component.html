@@ -1,0 +1,25 @@
+<form [formGroup]="groupForm">
+
+  <ion-grid formArrayName="items">
+    <ion-row  *ngFor="let item of groupForm?.controls.items.controls; let i = index" [formGroupName]='i'>
+      <ion-col>
+          <ion-item>
+            <ion-label floating>Item</ion-label>
+            <ion-input type="text" (keyup)="updateItems()" formControlName='item'></ion-input>
+          </ion-item>
+        </ion-col>
+        <ion-col >
+          <ion-item>
+            <ion-label floating>Amount</ion-label>
+            <ion-input type="number" (keyup)="updateItems()" formControlName='itemAmount' step=".01"></ion-input>
+          </ion-item>
+        </ion-col>
+    </ion-row>
+  </ion-grid>
+
+    <button *ngIf="!completed" ion-button block type="button" (click)="addFormFeilds()" [round]="true">Add More Items</button>
+<button *ngIf="completed" ion-button block type="button" (click)="deleteReceipt()" [round]="true">Delete Receipt</button>
+<button *ngIf="!completed && userType=='admin'" ion-button block type="button" (click)="onCompleted()" margin-top [round]="true">Mark as complete and save</button>
+<button *ngIf="!completed && userType=='admin'" ion-button block type="button" (click)="onEdit()" margin-top [round]="true">Edit Bill Amount</button>
+
+</form>

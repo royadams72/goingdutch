@@ -1,104 +1,106 @@
 import { Injectable, EventEmitter, Output} from '@angular/core';
 import {BehaviorSubject} from 'rxjs/BehaviorSubject';
 import * as io from 'socket.io-client';
-import { AngularFire, FirebaseListObservable } from 'angularfire2';
+import { AngularFire, FirebaseListObservable, FirebaseObjectObservable } from 'angularfire2';
 import { Group } from '../models/group.model';
 import { Observable } from 'rxjs/Observable';
+
 import { AfService } from '../services/af.service';
-import { UserAmount } from '../models/userAmount.model';
+import { UserInfo } from '../models/userAmount.model';
 import { Geolocation } from 'ionic-native';
+
 import { Location } from '../models/location.model';
+import 'rxjs/Rx';
 @Injectable()
 export class GroupService {
   private socket: any;
   private url = 'https://going-dutch.herokuapp.com';
-  private allUsers: UserAmount[] = [];
-  updateArr = new BehaviorSubject<Array<any>>([]);
+  private allUsers: UserInfo[] = [];
+  public group:any = [];
+  public hasInitialised = false;
 
-constructor(private _af:AngularFire,
-            private afService:AfService,) {
-            this.socket = io(this.url);
+  public passParams = new BehaviorSubject<any>(null);
+  constructor(private _af:AngularFire,
+              private afService:AfService) {}
 
- }
+  public getGroupInfo(groupname, username){
 
-public getOldAmounts(oldAmount,username, groupname){
-  return  this.afService.getOldAmounts(groupname).map(
-    (data)=>{
-      for(let i = 0; i < data.length; i++){
-        let userInfo = new UserAmount(data[i].userAmount, data[i].username, data[i].groupname);
-          if(username == data[i].username){//Get the previous amount fo this user and put into var
-            oldAmount = data[i].userAmount;//This will make sure that the amount in the db is added to rather than overwritten
-          }
-          this.allUsers.push(userInfo);//Push all  amounts to array and update the view
-      }
-      return this.allUsers;
-    }
-);
-
-}
-
-  upDateItems(totalBillAmount,groupname, userAmount, username){
-    let userInfo = new UserAmount(userAmount, username, groupname)
-        this.afService.updateUserAmount(userInfo, username, groupname);//Update firebase database
-        this.socket.emit('update-receipt',totalBillAmount, groupname, userAmount, username);
-  }
-
-  disconnectUsers(groupname){
-        this.socket.emit('completed', groupname);
-  }
-
-
-  getItems(){
-      //This observes info being sent to socket, for calculation
-      let observable = new Observable((observer:any) => {
-        this.socket.on('receipt-updated', (data:any) => {
-          observer.next(data);
-        })
-          return () => {
-            this.socket.disconnect();
-          }
+    return Observable.combineLatest([
+        this.getGroup(groupname, username),
+        this.groupMembers(username, groupname)
+    ])
+      .map((data)=>{
+        this.group = data;
+        this.passParams.next(this.group);
+        return this.group;
       })
-      return observable;
   }
 
-  checkIfComplete(){
+  public getGroup(groupname, username): Observable<any>{
+    return  Observable.from(this._af.database.object('/groups/'+groupname) as FirebaseObjectObservable<any>)
+
+    .map((group)=>{
+      // console.log(group)
+      return group
+    })
+    .catch((error) => {
+      return Observable.throw(error)
+    })
+  }
+
+  public groupMembers(username, groupname): Observable<any>{
+    return   Observable.from(this.afService.getUserItems(groupname))
+    .map((users:UserInfo[])=>{
+      // console.log(users)
+      return users
+    })
+    .catch((error) => {
+      return Observable.throw(error)
+    })
+  }
+
+  public upDateItems(totalBillAmount,groupname, userTotal, items,username){
+      let userInfo = new UserInfo(items, userTotal, username, groupname)
+        this.afService.updateUser(userInfo, username, groupname);//Update firebase database
+  }
+
+  public checkIfComplete(groupname){
       //Function for users can watch for when administrator has marked receipt as completed
-      let observable = new Observable((observer:any) => {
-        this.socket.on('receipt-completed', (data) => {
-          console.log("observable-fired")
-          observer.next(data);
+      return (this._af.database.list('/groups/'+groupname) as FirebaseListObservable<Group[]>)
+        .map((group) =>{
+          // console.log(group.groupname, group.completed)
+          return group
         })
-      })
-      return observable;
   }
 
-update(arr: Array<any>){
-  this.updateArr.next(arr);
-}
-
-
-public  joinGroup(groupname){
-    this.socket.connect();
-    this.socket.emit('group', groupname);
-  //  console.log(groupname)
+  public updateTotalBill(groupname, amount: Observable<number>){
+    return amount.debounceTime(300)
+      .distinctUntilChanged()
+      .filter(amount => amount !== null )
+      .switchMap(amount =>{
+      return this.afService.updateGroup(groupname, amount);
+    })
   }
 
-public createGroup(groupname, username, totalBillAmount, groupcode){
-  return Geolocation.getCurrentPosition()
-      .then((location) => {
-      //When creating a group
-        let address:Location = new Location(location.coords.latitude, location.coords.longitude);
-            //creates group with Geolocation, so can match other users to this
-            //Ada to a firebase database and joins/creates the socket.io group
-            let group = new Group(groupname, username, totalBillAmount, address, false, groupcode, [username]);
-              this.afService.setGroup(group, groupname);
-              this.joinGroup(groupname);
-              return group;
-          }//End Location
-      ).catch((error) => {
-      console.log('Error getting location', error);
-    });
+  public createGroup(groupname, username, totalBillAmount, groupcode){
+    //  console.log(groupname, username, totalBillAmount, groupcode)
+    //  return groupname
+    return Geolocation.getCurrentPosition()
+        .then((location) => {
+        //When creating a group
+        let data
 
-}
+          let address:Location = new Location(location.coords.latitude, location.coords.longitude);
+              //creates group with Geolocation, so can match other users to this
+              //Ad to a firebase database
+              data = new Group(groupname, username, totalBillAmount, address, false, groupcode, [username]);
+              // console.log(group)
+                this.afService.setGroup(data, groupname);
+                return data;
+            }//End Location
+        ).catch((error) => {
+        console.log('Error getting location', error);
+      });
 
+  }
 }
